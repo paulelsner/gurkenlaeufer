@@ -1,0 +1,12 @@
+language: cpp
+compiler:
+  - clang
+  - gcc
+dist: trusty
+
+before_script:  
+  - mkdir build
+  - cd build
+  - cmake ..
+
+script: make -j
