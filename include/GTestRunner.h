@@ -16,7 +16,7 @@ TEST_P(CucumberTest, runSteps)
     for (const auto& step : testcase) {
         bool foundStep = false;
 
-        for (const auto& entry : BaseStep::StepRegistry) {
+        for (const auto& entry : BaseStep::getStepRegistry()) {
             std::smatch match;
             if (std::regex_match(step, match, std::regex(entry.first))) {
                 foundStep = true;

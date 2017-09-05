@@ -38,40 +38,28 @@ public:
         _fixtures.clear();
     }
 };
-//extern TestContext CurrentTestContext;
 
-/*template <typename T>
-struct ScenarioScope
-{
-    ScenarioScope() : _fixture(CurrentTestContext.getFixture<T>())
-    {
-    }
-
-    T *operator->()
-    {
-        return _fixture;
-    }
-
-  private:
-    T *_fixture;
-};
-*/
 class BaseStep {
 public:
     virtual ~BaseStep() = default;
     virtual void runStep(const std::vector<Variant>&) = 0;
-
-    static std::list<std::pair<std::string, BaseStep*>> StepRegistry;
 
     void setContext(TestContext* context)
     {
         _context = context;
     }
 
+    using StepRegistry = std::list<std::pair<std::string, BaseStep*>>;
+    static StepRegistry& getStepRegistry()
+    {
+        static StepRegistry registry;
+        return registry;
+    }
+
 protected:
     BaseStep(std::string RegEx, BaseStep* Step)
     {
-        StepRegistry.emplace_back(std::make_pair(RegEx, Step));
+        getStepRegistry().emplace_back(std::make_pair(RegEx, Step));
     }
     template <typename T>
     T* getFixture()

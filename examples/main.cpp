@@ -23,7 +23,7 @@ auto testcases = std::make_shared<TestcaseCollection>();
 
 int main(int argc, char** argv)
 {
-    std::ifstream fin("addition.feature");
+    std::ifstream fin("examples/addition.feature");
 
     Parser parser(IParserStateFactoryPtr(new ParserStateFactory(testcases)));
 
