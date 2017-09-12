@@ -6,6 +6,10 @@
 #include "gtest/gtest.h"
 #include <regex>
 
+// User has to implement this function to return the list of test steps
+// which should be executed by the test runner.
+extern std::list<TestSteps> getTestCases();
+
 class CucumberTest : public testing::TestWithParam<TestSteps> {
 };
 
@@ -36,3 +40,8 @@ TEST_P(CucumberTest, runSteps)
         }
     }
 }
+
+INSTANTIATE_TEST_CASE_P(
+    GeneralAndSpecial,
+    CucumberTest,
+    testing::ValuesIn(getTestCases()));
