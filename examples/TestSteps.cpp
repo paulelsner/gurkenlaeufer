@@ -30,3 +30,13 @@ STEP(".*the result should be (\\d+) on the screen$")
     std::cout << "Sum=" << sum << " " << params[0].getInt() << std::endl;
     EXPECT_EQ(params[0].getInt(), sum);
 }
+
+BEFORE("Print")
+{
+    std::cout << " ctrl + p" << std::endl;
+}
+
+BEFORE("Echo")
+{
+    std::cout << " echo ho ho ho" << std::endl;
+}

@@ -11,21 +11,21 @@ public:
     {
     }
 
-    ParserStatePtr createInitialState(TestSteps backgroudSteps) override
+    ParserStatePtr createInitialState(TestSteps::StepList backgroudSteps) override
     {
         return ParserStatePtr(new InitialState(*this, std::move(backgroudSteps)));
     }
-    ParserStatePtr createExamplesState(TestSteps steps, TestSteps backgroudSteps) override
+    ParserStatePtr createExamplesState(TestSteps steps, TestSteps::StepList backgroudSteps) override
     {
         return ParserStatePtr(new ExamplesState(*this, std::move(steps), std::move(backgroudSteps), _testcases));
     }
-    ParserStatePtr createScenarioState(TestSteps backgroudSteps) override
+    ParserStatePtr createScenarioState(TestSteps::StepList backgroudSteps, TestSteps::StepList tags) override
     {
-        return ParserStatePtr(new ScenarioState(*this, std::move(backgroudSteps), _testcases));
+        return ParserStatePtr(new ScenarioState(*this, std::move(backgroudSteps), std::move(tags), _testcases));
     }
-    ParserStatePtr createScenarioOutlineState(TestSteps backgroudSteps) override
+    ParserStatePtr createScenarioOutlineState(TestSteps::StepList backgroudSteps, TestSteps::StepList tags) override
     {
-        return ParserStatePtr(new ScenarioOutlineState(*this, std::move(backgroudSteps)));
+        return ParserStatePtr(new ScenarioOutlineState(*this, std::move(backgroudSteps), std::move(tags)));
     }
 
     ParserStatePtr createBackgroundState() override

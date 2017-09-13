@@ -30,6 +30,4 @@ The test runner uses the [google-test](https://github.com/google/googletest) fra
 * Scenarios
 * Background
 * Scenario Outline with examples
-
-# Planes Features
 * Before and After hooks

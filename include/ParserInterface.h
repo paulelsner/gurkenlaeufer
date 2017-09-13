@@ -9,10 +9,10 @@ struct ParserState {
 using ParserStatePtr = std::unique_ptr<ParserState>;
 
 struct IParserStateFactory {
-    virtual ParserStatePtr createInitialState(TestSteps backgroudSteps) = 0;
-    virtual ParserStatePtr createExamplesState(TestSteps steps, TestSteps backgroudSteps) = 0;
-    virtual ParserStatePtr createScenarioState(TestSteps backgroudSteps) = 0;
-    virtual ParserStatePtr createScenarioOutlineState(TestSteps backgroudSteps) = 0;
+    virtual ParserStatePtr createInitialState(TestSteps::StepList backgroudSteps) = 0;
+    virtual ParserStatePtr createExamplesState(TestSteps steps, TestSteps::StepList backgroudSteps) = 0;
+    virtual ParserStatePtr createScenarioState(TestSteps::StepList backgroudSteps, TestSteps::StepList tags) = 0;
+    virtual ParserStatePtr createScenarioOutlineState(TestSteps::StepList backgroudSteps, TestSteps::StepList tags) = 0;
     virtual ParserStatePtr createBackgroundState() = 0;
 };
 

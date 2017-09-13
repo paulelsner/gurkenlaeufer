@@ -36,7 +36,7 @@ auto isSpace = [](int c) { return std::isspace(c); };
 
 class ExamplesState : public ParserState {
 public:
-    ExamplesState(IParserStateFactory& factory, TestSteps steps, TestSteps backgroudSteps, const ITestcaseCollectionSPtr& testcases)
+    ExamplesState(IParserStateFactory& factory, TestSteps steps, TestSteps::StepList backgroudSteps, const ITestcaseCollectionSPtr& testcases)
         : _factory(factory)
         , _Steps(std::move(steps))
         , _backgroudSteps(std::move(backgroudSteps))
@@ -69,11 +69,11 @@ public:
 private:
     void _generateSteps(const std::vector<std::string>& params)
     {
-        TestSteps steps(_Steps.size());
-        std::transform(_Steps.begin(), _Steps.end(), steps.begin(), [&](const std::string& step) {
-            return _replaceParamsInStep(step, params);
-        });
-        _testcases->appendTest(std::move(steps));
+        TestSteps stepCopy = _Steps;
+        for (auto& step : stepCopy.mainSteps) {
+            step = _replaceParamsInStep(step, params);
+        }
+        _testcases->appendTest(std::move(stepCopy));
     }
 
     std::string _replaceParamsInStep(const std::string& step, const std::vector<std::string>& params) const
@@ -101,7 +101,7 @@ private:
 
     IParserStateFactory& _factory;
     TestSteps _Steps;
-    TestSteps _backgroudSteps;
+    TestSteps::StepList _backgroudSteps;
     ITestcaseCollectionSPtr _testcases;
     std::vector<std::string> _TableHead;
     bool _isTableHead;
@@ -109,11 +109,12 @@ private:
 
 class ScenarioOutlineState : public ParserState {
 public:
-    ScenarioOutlineState(IParserStateFactory& factory, TestSteps backgroudSteps)
+    ScenarioOutlineState(IParserStateFactory& factory, TestSteps::StepList backgroudSteps, TestSteps::StepList tags)
         : _factory(factory)
         , _backgroudSteps(std::move(backgroudSteps))
     {
-        _Steps = _backgroudSteps;
+        _Steps.mainSteps = _backgroudSteps;
+        _Steps.tags = tags;
     }
 
     std::unique_ptr<ParserState> parseLine(const std::string& trimmedLine) override
@@ -123,7 +124,7 @@ public:
         auto firstWord = toLower(std::string(trimmedLine.begin(), firstWordEnd));
         if (isStepKeyword(firstWord)) {
             auto secondWordBegin = firstWordEnd + 1;
-            _Steps.emplace_back(std::string(secondWordBegin, trimmedLine.end()));
+            _Steps.mainSteps.emplace_back(std::string(secondWordBegin, trimmedLine.end()));
         } else {
             return _factory.createExamplesState(std::move(_Steps), std::move(_backgroudSteps));
         }
@@ -132,18 +133,19 @@ public:
 
 private:
     IParserStateFactory& _factory;
-    TestSteps _backgroudSteps;
-    std::list<std::string> _Steps;
+    TestSteps::StepList _backgroudSteps;
+    TestSteps _Steps;
 };
 
 class ScenarioState : public ParserState {
 public:
-    ScenarioState(IParserStateFactory& factory, TestSteps backgroudSteps, const ITestcaseCollectionSPtr& testcases)
+    ScenarioState(IParserStateFactory& factory, TestSteps::StepList backgroudSteps, TestSteps::StepList tags, const ITestcaseCollectionSPtr& testcases)
         : _factory(factory)
         , _backgroudSteps(std::move(backgroudSteps))
         , _testcases(testcases)
     {
-        _Steps = _backgroudSteps;
+        _Steps.mainSteps = _backgroudSteps;
+        _Steps.tags = tags;
     }
 
     std::unique_ptr<ParserState> parseLine(const std::string& trimmedLine) override
@@ -153,18 +155,23 @@ public:
         auto firstWord = toLower(std::string(trimmedLine.begin(), firstWordEnd));
         if (isStepKeyword(firstWord)) {
             auto secondWordBegin = firstWordEnd + 1;
-            _Steps.emplace_back(std::string(secondWordBegin, trimmedLine.end()));
+            _Steps.mainSteps.emplace_back(std::string(secondWordBegin, trimmedLine.end()));
         } else {
             _testcases->appendTest(std::move(_Steps));
             // forward to next state
-            return _factory.createInitialState(std::move(_backgroudSteps))->parseLine(trimmedLine);
+            auto initState = _factory.createInitialState(std::move(_backgroudSteps));
+            auto nextState = initState->parseLine(trimmedLine);
+            if (nextState != nullptr) {
+                return nextState;
+            }
+            return initState;
         }
         return nullptr;
     }
 
 private:
     IParserStateFactory& _factory;
-    TestSteps _backgroudSteps;
+    TestSteps::StepList _backgroudSteps;
     ITestcaseCollectionSPtr _testcases;
     TestSteps _Steps;
 };
@@ -186,19 +193,24 @@ public:
             _Steps.emplace_back(std::string(secondWordBegin, trimmedLine.end()));
         } else {
             // forward to next state
-            return _factory.createInitialState(std::move(_Steps))->parseLine(trimmedLine);
+            auto initState = _factory.createInitialState(std::move(_Steps));
+            auto nextState = initState->parseLine(trimmedLine);
+            if (nextState != nullptr) {
+                return nextState;
+            }
+            return initState;
         }
         return nullptr;
     }
 
 private:
     IParserStateFactory& _factory;
-    std::list<std::string> _Steps;
+    TestSteps::StepList _Steps;
 };
 
 class InitialState : public ParserState {
 public:
-    InitialState(IParserStateFactory& factory, TestSteps backgroudSteps)
+    InitialState(IParserStateFactory& factory, TestSteps::StepList backgroudSteps)
         : _factory(factory)
         , _backgroudSteps(std::move(backgroudSteps))
     {
@@ -207,17 +219,25 @@ public:
     std::unique_ptr<ParserState> parseLine(const std::string& trimmedLine) override
     {
         auto isSpace = [](int c) { return std::isspace(c); };
-        auto fistWordEnd = std::find_if(trimmedLine.begin(), trimmedLine.end(), isSpace);
-        const std::string firstWord(trimmedLine.begin(), fistWordEnd);
+        auto firstWordEnd = std::find_if(trimmedLine.begin(), trimmedLine.end(), isSpace);
+
+        if (trimmedLine[0] == '@') {
+            const auto secondLetter = ++trimmedLine.begin();
+            const auto tag = std::string(secondLetter, firstWordEnd);
+            //_hooks.emplace_back(secondLetter, firstWordEnd);
+            _hooks.push_back(tag);
+            return nullptr;
+        }
+        const std::string firstWord(trimmedLine.begin(), firstWordEnd);
         if (firstWord == "Scenario") {
-            auto secondWordBegin = fistWordEnd + 1;
+            auto secondWordBegin = firstWordEnd + 1;
             auto secondWordEnd = std::find_if(secondWordBegin, trimmedLine.end(), isSpace);
             const std::string secondWord(secondWordBegin, secondWordEnd);
             if (secondWord == "Outline:") {
-                return _factory.createScenarioOutlineState(std::move(_backgroudSteps));
+                return _factory.createScenarioOutlineState(std::move(_backgroudSteps), std::move(_hooks));
             }
         } else if (firstWord == "Scenario:") {
-            return _factory.createScenarioState(std::move(_backgroudSteps));
+            return _factory.createScenarioState(std::move(_backgroudSteps), std::move(_hooks));
         } else if (firstWord == "Background:") {
             return _factory.createBackgroundState();
         }
@@ -226,5 +246,6 @@ public:
 
 private:
     IParserStateFactory& _factory;
-    TestSteps _backgroudSteps;
+    TestSteps::StepList _backgroudSteps;
+    TestSteps::StepList _hooks;
 };

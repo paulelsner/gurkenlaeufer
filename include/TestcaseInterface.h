@@ -4,7 +4,12 @@
 #include <memory>
 #include <string>
 
-using TestSteps = std::list<std::string>;
+struct TestSteps {
+    using StepList = std::list<std::string>;
+    StepList tags;
+    StepList mainSteps;
+};
+
 struct ITestcaseCollection {
     virtual void appendTest(TestSteps steps) = 0;
     virtual std::list<TestSteps> getSteps() const = 0;
