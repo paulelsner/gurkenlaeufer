@@ -13,7 +13,7 @@ Here are the benefits listed:
 * parallel test execution
 * simple debugging
 
-# How this is archived
+# How this is achieved
 
 Gurkenlaeufer has three parts:
 1. Simple gherkin file parser
