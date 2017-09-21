@@ -1,7 +1,8 @@
 # gurkenlaeufer
 Simple cucumber like test runner.
 
-[![Build Status](https://travis-ci.org/paulelsner/gurkenlaeufer.svg?branch=master)](https://travis-ci.org/paulelsner/gurkenlaeufer)
+[![Build Status](https://travis-ci.org/paulelsner/gurkenlaeufer.svg?branch=master)](https://travis-ci.org/paulelsner/gurkenlaeufer) [![Build status](https://ci.appveyor.com/api/projects/status/8eth31num4oq6qwr?svg=true)](https://ci.appveyor.com/project/paulelsner/gurkenlaeufer)
+
 
 # What it does for you
 The goal of this project is to provide a simple way to write cucumber tests for your C++ projects. Other projects like [cucumber-cpp](https://github.com/cucumber/cucumber-cpp) could already do that, but they add a huge amount of complexity for your tests. Like using ruby in your CI environment and handle running multiple processes.

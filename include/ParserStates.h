@@ -32,8 +32,6 @@ inline bool isStepKeyword(std::string word)
     return word == "given" || word == "when" || word == "then" || word == "and";
 }
 
-auto isSpace = [](int c) { return std::isspace(c); };
-
 class ExamplesState : public ParserState {
 public:
     ExamplesState(IParserStateFactory& factory, TestSteps steps, TestSteps::StepList backgroudSteps, const ITestcaseCollectionSPtr& testcases)
@@ -119,7 +117,7 @@ public:
 
     std::unique_ptr<ParserState> parseLine(const std::string& trimmedLine) override
     {
-        auto firstWordEnd = std::find_if(trimmedLine.begin(), trimmedLine.end(), isSpace);
+        auto firstWordEnd = std::find_if(trimmedLine.begin(), trimmedLine.end(), ::isspace);
 
         auto firstWord = toLower(std::string(trimmedLine.begin(), firstWordEnd));
         if (isStepKeyword(firstWord)) {
@@ -150,7 +148,7 @@ public:
 
     std::unique_ptr<ParserState> parseLine(const std::string& trimmedLine) override
     {
-        auto firstWordEnd = std::find_if(trimmedLine.begin(), trimmedLine.end(), isSpace);
+        auto firstWordEnd = std::find_if(trimmedLine.begin(), trimmedLine.end(), ::isspace);
 
         auto firstWord = toLower(std::string(trimmedLine.begin(), firstWordEnd));
         if (isStepKeyword(firstWord)) {
@@ -185,7 +183,7 @@ public:
 
     std::unique_ptr<ParserState> parseLine(const std::string& trimmedLine) override
     {
-        auto firstWordEnd = std::find_if(trimmedLine.begin(), trimmedLine.end(), isSpace);
+        auto firstWordEnd = std::find_if(trimmedLine.begin(), trimmedLine.end(), ::isspace);
 
         auto firstWord = toLower(std::string(trimmedLine.begin(), firstWordEnd));
         if (isStepKeyword(firstWord)) {
@@ -218,8 +216,7 @@ public:
 
     std::unique_ptr<ParserState> parseLine(const std::string& trimmedLine) override
     {
-        auto isSpace = [](int c) { return std::isspace(c); };
-        auto firstWordEnd = std::find_if(trimmedLine.begin(), trimmedLine.end(), isSpace);
+        auto firstWordEnd = std::find_if(trimmedLine.begin(), trimmedLine.end(), ::isspace);
 
         if (trimmedLine[0] == '@') {
             const auto secondLetter = ++trimmedLine.begin();
@@ -231,7 +228,7 @@ public:
         const std::string firstWord(trimmedLine.begin(), firstWordEnd);
         if (firstWord == "Scenario") {
             auto secondWordBegin = firstWordEnd + 1;
-            auto secondWordEnd = std::find_if(secondWordBegin, trimmedLine.end(), isSpace);
+            auto secondWordEnd = std::find_if(secondWordBegin, trimmedLine.end(), ::isspace);
             const std::string secondWord(secondWordBegin, secondWordEnd);
             if (secondWord == "Outline:") {
                 return _factory.createScenarioOutlineState(std::move(_backgroudSteps), std::move(_hooks));
