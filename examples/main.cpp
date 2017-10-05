@@ -1,7 +1,7 @@
-#include "GTestRunner.h"
-#include "Parser.h"
-#include "ParserStateFactory.h"
-#include "TestcaseCollection.h"
+#include "gurkenlaeufer/GTestRunner.h"
+#include "gurkenlaeufer/Parser.h"
+#include "gurkenlaeufer/ParserStateFactory.h"
+#include "gurkenlaeufer/TestcaseCollection.h"
 #include "gtest/gtest.h"
 #include <algorithm>
 #include <fstream>

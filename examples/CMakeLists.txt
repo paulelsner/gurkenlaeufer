@@ -1,8 +1,7 @@
-
 add_executable(example
+  addition.feature
   main.cpp
   TestSteps.cpp
 )
 
-target_include_directories(example PRIVATE ../include)
-target_link_libraries(example gtest)
+target_link_libraries(example gurkenlaeufer gtest)

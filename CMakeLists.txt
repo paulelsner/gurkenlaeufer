@@ -4,19 +4,24 @@ project("gurkenlaeufer")
 
 include(CMakeToolsHelpers OPTIONAL)
 
-set (CMAKE_CXX_STANDARD 11)
-set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
+set(CMAKE_CXX_STANDARD 11)
 
-if(NOT MSVC)
-  find_package(Threads REQUIRED)
-  link_libraries(pthread)
-endif()
+add_library(gurkenlaeufer INTERFACE)
 
-add_library(gtest 
-  gtest/src/gmock-gtest-all.cpp
-)
+target_sources(
+    gurkenlaeufer
+    INTERFACE
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/gurkenlaeufer/GTestRunner.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/gurkenlaeufer/Parser.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/gurkenlaeufer/ParserInterface.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/gurkenlaeufer/ParserStateFactory.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/gurkenlaeufer/ParserStates.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/gurkenlaeufer/Step.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/gurkenlaeufer/TestcaseCollection.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/gurkenlaeufer/TestcaseInterface.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/gurkenlaeufer/Variant.h)
 
-include_directories(SYSTEM
-  gtest/include)
+target_include_directories(gurkenlaeufer INTERFACE include/)
 
+add_subdirectory(gtest)
 add_subdirectory(examples)
