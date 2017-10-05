@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+namespace gurkenlaeufer {
+
 struct IFixture {
     virtual ~IFixture() = default;
 };
@@ -108,36 +110,37 @@ protected:
 private:
     TestContext* _context;
 };
+}
 
-#define STEP_INTERNAL(Name, Instance, RegEx)                \
-    struct Name : public BaseStep {                         \
-        Name()                                              \
-            : BaseStep(RegEx, this)                         \
-        {                                                   \
-        }                                                   \
-        void runStep(const std::vector<Variant>&) override; \
-    } Instance;                                             \
-    void Name::runStep(const std::vector<Variant>& params)
+#define STEP_INTERNAL(Name, Instance, RegEx)                               \
+    struct Name : public gurkenlaeufer::BaseStep {                         \
+        Name()                                                             \
+            : gurkenlaeufer::BaseStep(RegEx, this)                         \
+        {                                                                  \
+        }                                                                  \
+        void runStep(const std::vector<gurkenlaeufer::Variant>&) override; \
+    } Instance;                                                            \
+    void Name::runStep(const std::vector<gurkenlaeufer::Variant>& params)
 
-#define BEFORE_HOOK_INTERNAL(Name, Instance, RegEx)                \
-    struct Name : public BaseHook<Hooktype::Before> {              \
-        Name()                                                     \
-            : BaseHook<Hooktype::Before>(RegEx, this)              \
-        {                                                          \
-        }                                                          \
-        void runStep(const std::vector<Variant>& params) override; \
-    } Instance;                                                    \
-    void Name::runStep(const std::vector<Variant>& params)
+#define BEFORE_HOOK_INTERNAL(Name, Instance, RegEx)                                 \
+    struct Name : public gurkenlaeufer::BaseHook<gurkenlaeufer::Hooktype::Before> { \
+        Name()                                                                      \
+            : gurkenlaeufer::BaseHook<gurkenlaeufer::Hooktype::Before>(RegEx, this) \
+        {                                                                           \
+        }                                                                           \
+        void runStep(const std::vector<gurkenlaeufer::Variant>& params) override;   \
+    } Instance;                                                                     \
+    void Name::runStep(const std::vector<gurkenlaeufer::Variant>& params)
 
-#define AFTER_HOOK_INTERNAL(Name, Instance, RegEx)                 \
-    struct Name : public BaseHook<Hooktype::After> {               \
-        Name()                                                     \
-            : BaseHook<Hooktype::After>(RegEx, this)               \
-        {                                                          \
-        }                                                          \
-        void runStep(const std::vector<Variant>& params) override; \
-    } Instance;                                                    \
-    void Name::runStep(const std::vector<Variant>& params)
+#define AFTER_HOOK_INTERNAL(Name, Instance, RegEx)                                 \
+    struct Name : public gurkenlaeufer::BaseHook<gurkenlaeufer::Hooktype::After> { \
+        Name()                                                                     \
+            : gurkenlaeufer::BaseHook<gurkenlaeufer::Hooktype::After>(RegEx, this) \
+        {                                                                          \
+        }                                                                          \
+        void runStep(const std::vector<gurkenlaeufer::Variant>& params) override;  \
+    } Instance;                                                                    \
+    void Name::runStep(const std::vector<gurkenlaeufer::Variant>& params)
 
 #define STR2(x) #x
 #define STR(x) x

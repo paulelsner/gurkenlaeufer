@@ -1,6 +1,9 @@
 #pragma once
+
 #include "ParserInterface.h"
-#include "TestcaseInterface.h"
+#include "ScenarioInterface.h"
+
+namespace gurkenlaeufer {
 
 // from http://stackoverflow.com/a/236803
 inline void split(const std::string& s, char delim, std::vector<std::string>& elems)
@@ -34,9 +37,9 @@ inline bool isStepKeyword(std::string word)
 
 class ExamplesState : public ParserState {
 public:
-    ExamplesState(IParserStateFactory& factory, TestSteps steps, TestSteps::StepList backgroudSteps, const ITestcaseCollectionSPtr& testcases)
+    ExamplesState(IParserStateFactory& factory, Scenario scenario, Scenario::StepList backgroudSteps, const IScenarioCollectionSPtr& testcases)
         : _factory(factory)
-        , _Steps(std::move(steps))
+        , _scenario(std::move(scenario))
         , _backgroudSteps(std::move(backgroudSteps))
         , _testcases(testcases)
         , _isTableHead(true)
@@ -67,11 +70,11 @@ public:
 private:
     void _generateSteps(const std::vector<std::string>& params)
     {
-        TestSteps stepCopy = _Steps;
-        for (auto& step : stepCopy.mainSteps) {
+        Scenario scenarioCopy = _scenario;
+        for (auto& step : scenarioCopy.mainSteps) {
             step = _replaceParamsInStep(step, params);
         }
-        _testcases->appendTest(std::move(stepCopy));
+        _testcases->appendScenario(std::move(scenarioCopy));
     }
 
     std::string _replaceParamsInStep(const std::string& step, const std::vector<std::string>& params) const
@@ -98,16 +101,16 @@ private:
     }
 
     IParserStateFactory& _factory;
-    TestSteps _Steps;
-    TestSteps::StepList _backgroudSteps;
-    ITestcaseCollectionSPtr _testcases;
+    Scenario _scenario;
+    Scenario::StepList _backgroudSteps;
+    IScenarioCollectionSPtr _testcases;
     std::vector<std::string> _TableHead;
     bool _isTableHead;
 };
 
 class ScenarioOutlineState : public ParserState {
 public:
-    ScenarioOutlineState(IParserStateFactory& factory, TestSteps::StepList backgroudSteps, TestSteps::StepList tags)
+    ScenarioOutlineState(IParserStateFactory& factory, Scenario::StepList backgroudSteps, Scenario::StepList tags)
         : _factory(factory)
         , _backgroudSteps(std::move(backgroudSteps))
     {
@@ -131,13 +134,13 @@ public:
 
 private:
     IParserStateFactory& _factory;
-    TestSteps::StepList _backgroudSteps;
-    TestSteps _Steps;
+    Scenario::StepList _backgroudSteps;
+    Scenario _Steps;
 };
 
 class ScenarioState : public ParserState {
 public:
-    ScenarioState(IParserStateFactory& factory, TestSteps::StepList backgroudSteps, TestSteps::StepList tags, const ITestcaseCollectionSPtr& testcases)
+    ScenarioState(IParserStateFactory& factory, Scenario::StepList backgroudSteps, Scenario::StepList tags, const IScenarioCollectionSPtr& testcases)
         : _factory(factory)
         , _backgroudSteps(std::move(backgroudSteps))
         , _testcases(testcases)
@@ -155,7 +158,7 @@ public:
             auto secondWordBegin = firstWordEnd + 1;
             _Steps.mainSteps.emplace_back(std::string(secondWordBegin, trimmedLine.end()));
         } else {
-            _testcases->appendTest(std::move(_Steps));
+            _testcases->appendScenario(std::move(_Steps));
             // forward to next state
             auto initState = _factory.createInitialState(std::move(_backgroudSteps));
             auto nextState = initState->parseLine(trimmedLine);
@@ -169,9 +172,9 @@ public:
 
 private:
     IParserStateFactory& _factory;
-    TestSteps::StepList _backgroudSteps;
-    ITestcaseCollectionSPtr _testcases;
-    TestSteps _Steps;
+    Scenario::StepList _backgroudSteps;
+    IScenarioCollectionSPtr _testcases;
+    Scenario _Steps;
 };
 
 class BackgroundState : public ParserState {
@@ -203,12 +206,12 @@ public:
 
 private:
     IParserStateFactory& _factory;
-    TestSteps::StepList _Steps;
+    Scenario::StepList _Steps;
 };
 
 class InitialState : public ParserState {
 public:
-    InitialState(IParserStateFactory& factory, TestSteps::StepList backgroudSteps)
+    InitialState(IParserStateFactory& factory, Scenario::StepList backgroudSteps)
         : _factory(factory)
         , _backgroudSteps(std::move(backgroudSteps))
     {
@@ -243,6 +246,7 @@ public:
 
 private:
     IParserStateFactory& _factory;
-    TestSteps::StepList _backgroudSteps;
-    TestSteps::StepList _hooks;
+    Scenario::StepList _backgroudSteps;
+    Scenario::StepList _hooks;
 };
+}

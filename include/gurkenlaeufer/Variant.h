@@ -1,7 +1,9 @@
 #pragma once
 
-#include <string>
 #include <cstdint>
+#include <string>
+
+namespace gurkenlaeufer {
 
 class Variant {
 public:
@@ -25,3 +27,4 @@ public:
 private:
     const std::string _input;
 };
+}

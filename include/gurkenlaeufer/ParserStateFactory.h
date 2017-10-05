@@ -2,28 +2,30 @@
 
 #include "ParserInterface.h"
 #include "ParserStates.h"
-#include "TestcaseInterface.h"
+#include "ScenarioInterface.h"
+
+namespace gurkenlaeufer {
 
 class ParserStateFactory : public IParserStateFactory {
 public:
-    ParserStateFactory(const ITestcaseCollectionSPtr& testcases)
+    ParserStateFactory(const IScenarioCollectionSPtr& testcases)
         : _testcases(testcases)
     {
     }
 
-    ParserStatePtr createInitialState(TestSteps::StepList backgroudSteps) override
+    ParserStatePtr createInitialState(Scenario::StepList backgroudSteps) override
     {
         return ParserStatePtr(new InitialState(*this, std::move(backgroudSteps)));
     }
-    ParserStatePtr createExamplesState(TestSteps steps, TestSteps::StepList backgroudSteps) override
+    ParserStatePtr createExamplesState(Scenario scenario, Scenario::StepList backgroudSteps) override
     {
-        return ParserStatePtr(new ExamplesState(*this, std::move(steps), std::move(backgroudSteps), _testcases));
+        return ParserStatePtr(new ExamplesState(*this, std::move(scenario), std::move(backgroudSteps), _testcases));
     }
-    ParserStatePtr createScenarioState(TestSteps::StepList backgroudSteps, TestSteps::StepList tags) override
+    ParserStatePtr createScenarioState(Scenario::StepList backgroudSteps, Scenario::StepList tags) override
     {
         return ParserStatePtr(new ScenarioState(*this, std::move(backgroudSteps), std::move(tags), _testcases));
     }
-    ParserStatePtr createScenarioOutlineState(TestSteps::StepList backgroudSteps, TestSteps::StepList tags) override
+    ParserStatePtr createScenarioOutlineState(Scenario::StepList backgroudSteps, Scenario::StepList tags) override
     {
         return ParserStatePtr(new ScenarioOutlineState(*this, std::move(backgroudSteps), std::move(tags)));
     }
@@ -34,5 +36,6 @@ public:
     }
 
 private:
-    ITestcaseCollectionSPtr _testcases;
+    IScenarioCollectionSPtr _testcases;
 };
+}

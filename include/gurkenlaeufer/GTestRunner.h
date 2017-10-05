@@ -1,19 +1,21 @@
 
 // include this file one time. In main.cpp for example
 
+#include "ScenarioInterface.h"
 #include "Step.h"
-#include "TestcaseInterface.h"
 #include "gtest/gtest.h"
 #include <regex>
 
+namespace gurkenlaeufer {
+
 // User has to implement this function to return the list of test steps
 // which should be executed by the test runner.
-extern std::list<TestSteps> getTestCases();
+extern std::list<Scenario> getScenarios();
 
-class CucumberTest : public testing::TestWithParam<TestSteps> {
+class CucumberTest : public testing::TestWithParam<Scenario> {
 protected:
     template <typename T>
-    void runStepList(const TestSteps::StepList& list, const T& registry, bool ignoreNotFound)
+    void runStepList(const Scenario::StepList& list, const T& registry, bool ignoreNotFound)
     {
         for (const auto& step : list) {
             bool foundStep = false;
@@ -42,7 +44,7 @@ protected:
     TestContext _currentContext;
 };
 
-TEST_P(CucumberTest, runSteps)
+TEST_P(CucumberTest, gurkenlaeuferRunStepsInTestCase)
 {
     const auto& testcase = GetParam();
     runStepList(testcase.tags, BaseHook<Hooktype::Before>::getStepRegistry(), true);
@@ -53,4 +55,5 @@ TEST_P(CucumberTest, runSteps)
 INSTANTIATE_TEST_CASE_P(
     GeneralAndSpecial,
     CucumberTest,
-    testing::ValuesIn(getTestCases()));
+    testing::ValuesIn(gurkenlaeufer::getScenarios()));
+}

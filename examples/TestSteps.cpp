@@ -17,6 +17,7 @@ STEP(".*press (\\w+)")
 {
     std::cout << params[0].getString() << std::endl;
 }
+
 STEP(".*nostep")
 {
 }
