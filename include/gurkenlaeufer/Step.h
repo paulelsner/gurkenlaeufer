@@ -104,16 +104,16 @@ namespace detail {
             _scenarioContext = scenarioContext;
         }
 
-    protected:
-        CommonStep(std::string RegEx, TStep* Step)
-        {
-            getStepRegistry().emplace_back(std::make_pair(RegEx, Step));
-        }
-
         template <typename T>
         std::shared_ptr<T> getFixture()
         {
             return _scenarioContext->getFixture<T>();
+        }
+
+    protected:
+        CommonStep(std::string RegEx, TStep* Step)
+        {
+            getStepRegistry().emplace_back(std::make_pair(RegEx, Step));
         }
 
     private:
@@ -192,7 +192,52 @@ namespace detail {
 #define AFTER(RegEx) \
     AFTER_HOOK_INTERNAL(JOIN(JOIN(AfterHook, STR(__COUNTER__)), STR(__LINE__)), JOIN(JOIN(Instance, STR(__COUNTER__)), STR(__LINE__)), RegEx)
 
+// cucumber-cpp adaption layer
+// to replace cucumber-cpp with gurkenlaeufer you have to do the following:
+// * #include "gurkenlaeufer/Step.h" instead of cucumber-cpp for your step definitions
+// * replace "cucumber::ScenarioScope<Context> Ctx;" by "gurkenlaeufer::ScenarioScope<Context> Ctx(this);"
 #define GIVEN(RegEx) STEP(RegEx)
 #define WHEN(RegEx) STEP(RegEx)
 #define THEN(RegEx) STEP(RegEx)
 #define REGEX_PARAM(type, name) const type name(stepCtx.getNextParam<type>())
+
+namespace gurkenlaeufer {
+template <class T>
+class ScenarioScope {
+public:
+    template <class TStep>
+    ScenarioScope(detail::CommonStep<TStep>* ptr);
+
+    T& operator*();
+    T* operator->();
+    T* get();
+
+private:
+    std::shared_ptr<T> context;
+};
+
+template <class T>
+template <class TStep>
+ScenarioScope<T>::ScenarioScope(detail::CommonStep<TStep>* ptr)
+{
+    context = ptr->getFixture<T>();
+}
+
+template <class T>
+T& ScenarioScope<T>::operator*()
+{
+    return *(context.get());
+}
+
+template <class T>
+T* ScenarioScope<T>::operator->()
+{
+    return (context.get());
+}
+
+template <class T>
+T* ScenarioScope<T>::get()
+{
+    return context.get();
+}
+}

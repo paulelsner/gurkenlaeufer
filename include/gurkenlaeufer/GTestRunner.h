@@ -43,10 +43,11 @@ namespace detail {
             }
         }
 
+    private:
         detail::ScenarioContext _currentScenarioContext;
     };
 
-    TEST_P(CucumberTest, gurkenlaeuferRunStepsInTestCase)
+    TEST_P(CucumberTest, runStepsInScenario)
     {
         const auto& testcase = GetParam();
         runStepList(testcase.tags, BaseHook<Hooktype::Before>::getStepRegistry(), true);
@@ -55,7 +56,7 @@ namespace detail {
     }
 
     INSTANTIATE_TEST_CASE_P(
-        GeneralAndSpecial,
+        gurkenlaeufer,
         CucumberTest,
         testing::ValuesIn(gurkenlaeufer::getScenarios()));
 }
