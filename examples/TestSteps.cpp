@@ -7,37 +7,40 @@ struct Calculator {
     std::vector<int> values;
 };
 
-STEP(".*have entered (\\d+) into the calculator$")
+GIVEN(".*have entered (\\d+) into the calculator$")
 {
     auto calc = getFixture<Calculator>();
-    calc->values.push_back(params[0].getInt());
+    REGEX_PARAM(int, integer);
+    calc->values.push_back(integer);
 }
 
-STEP(".*press (\\w+)")
+WHEN(".*press (\\w+)")
 {
-    std::cout << params[0].getString() << std::endl;
+    REGEX_PARAM(std::string, string);
+    std::cout << string << std::endl;
 }
 
 STEP(".*nostep")
 {
 }
 
-STEP(".*the result should be (\\d+) on the screen$")
+THEN(".*the result should be (\\d+) on the screen$")
 {
     auto calc = getFixture<Calculator>();
     int sum = 0;
     for (auto& n : calc->values)
         sum += n;
-    std::cout << "Sum=" << sum << " " << params[0].getInt() << std::endl;
-    EXPECT_EQ(params[0].getInt(), sum);
+    REGEX_PARAM(int, result);
+    std::cout << "Sum=" << sum << " " << result << std::endl;
+    EXPECT_EQ(result, sum);
 }
 
 BEFORE("Print")
 {
-    std::cout << " ctrl + p" << std::endl;
+    std::cout << "ctrl + p" << std::endl;
 }
 
-BEFORE("Echo")
+AFTER("Echo")
 {
-    std::cout << " echo ho ho ho" << std::endl;
+    std::cout << "echo ho ho ho" << std::endl;
 }
