@@ -16,23 +16,23 @@ namespace detail {
     struct Fixture : public IFixture, public T {
     };
 
-    class TestContext {
-        std::vector<std::unique_ptr<IFixture>> _fixtures;
+    class ScenarioContext {
+        std::vector<std::shared_ptr<IFixture>> _fixtures;
 
     public:
         template <typename T>
-        T* getFixture()
+        std::shared_ptr<T> getFixture()
         {
             for (auto& fixture : _fixtures) {
-                T* ptr = dynamic_cast<T*>(fixture.get());
+                auto ptr = std::dynamic_pointer_cast<T>(fixture);
                 if (ptr != nullptr) {
                     return ptr;
                 }
             }
 
-            auto ptr = new Fixture<T>();
-            _fixtures.emplace_back(std::unique_ptr<IFixture>(ptr));
-            return ptr;
+            auto fixture = std::make_shared<Fixture<T>>();
+            _fixtures.emplace_back(fixture);
+            return fixture;
         }
 
         void reset()
@@ -99,9 +99,9 @@ namespace detail {
             return registry;
         }
 
-        void setContext(TestContext* context)
+        void setScenarioContext(ScenarioContext* scenarioContext)
         {
-            _context = context;
+            _scenarioContext = scenarioContext;
         }
 
     protected:
@@ -111,13 +111,13 @@ namespace detail {
         }
 
         template <typename T>
-        T* getFixture()
+        std::shared_ptr<T> getFixture()
         {
-            return _context->getFixture<T>();
+            return _scenarioContext->getFixture<T>();
         }
 
     private:
-        TestContext* _context;
+        ScenarioContext* _scenarioContext;
     };
 
     class BaseStep : public CommonStep<BaseStep> {

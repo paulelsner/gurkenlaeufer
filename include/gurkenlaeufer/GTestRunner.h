@@ -31,7 +31,7 @@ namespace detail {
                         }
 
                         std::cout << step << std::endl;
-                        entry.second->setContext(&_currentContext);
+                        entry.second->setScenarioContext(&_currentScenarioContext);
                         StepContext stepCtx(std::move(params));
                         entry.second->runStep(stepCtx);
                     }
@@ -43,7 +43,7 @@ namespace detail {
             }
         }
 
-        detail::TestContext _currentContext;
+        detail::ScenarioContext _currentScenarioContext;
     };
 
     TEST_P(CucumberTest, gurkenlaeuferRunStepsInTestCase)
