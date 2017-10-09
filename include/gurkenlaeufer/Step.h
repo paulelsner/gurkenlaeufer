@@ -1,156 +1,19 @@
 #pragma once
 
-#include <list>
-#include <memory>
-#include <string>
-#include <vector>
+#include "StepInterface.h"
 
-namespace gurkenlaeufer {
-namespace detail {
+// cucumber-cpp adaption of CUKE_OBJECT_PREFIX
+#ifndef GURKE_STEP_NAME_PREFIX
+#ifdef CUKE_OBJECT_PREFIX
+#define GURKE_STEP_NAME_PREFIX CUKE_OBJECT_PREFIX
+#endif
+#endif
 
-    struct IFixture {
-        virtual ~IFixture() = default;
-    };
+#ifndef GURKE_STEP_NAME_PREFIX
+#error GURKE_STEP_NAME_PREFIX has to be defined!
+#endif
 
-    template <typename T>
-    struct Fixture : public IFixture, public T {
-    };
-
-    class ScenarioContext {
-        std::vector<std::shared_ptr<IFixture>> _fixtures;
-
-    public:
-        template <typename T>
-        std::shared_ptr<T> getFixture()
-        {
-            for (auto& fixture : _fixtures) {
-                auto ptr = std::dynamic_pointer_cast<T>(fixture);
-                if (ptr != nullptr) {
-                    return ptr;
-                }
-            }
-
-            auto fixture = std::make_shared<Fixture<T>>();
-            _fixtures.emplace_back(fixture);
-            return fixture;
-        }
-
-        void reset()
-        {
-            _fixtures.clear();
-        }
-    };
-
-    template <typename T>
-    T fromString(const std::string& s)
-    {
-        T t;
-        std::istringstream iss(s);
-        iss >> t;
-        if (iss.fail()) {
-            throw std::invalid_argument("Failed to convert parameter!");
-        }
-        return t;
-    }
-
-    template <>
-    inline std::string fromString(const std::string& s)
-    {
-        return s;
-    }
-
-    class StepContext {
-    public:
-        StepContext(std::vector<std::string>&& params)
-            : _params(std::move(params))
-        {
-        }
-
-        template <typename T>
-        T getParam(std::size_t i) const
-        {
-            if (i >= _params.size()) {
-                throw std::invalid_argument("Parameter index out of range!");
-            }
-            return fromString<T>(_params.at(i));
-        }
-
-        template <typename T>
-        const T getNextParam()
-        {
-            return getParam<T>(_currentParamIdx++);
-        }
-
-    private:
-        const std::vector<std::string> _params;
-        std::size_t _currentParamIdx = 0u;
-    };
-
-    template <typename TStep>
-    class CommonStep {
-    public:
-        virtual ~CommonStep() = default;
-        virtual void runStep(StepContext&) = 0;
-
-        using StepRegistry = std::list<std::pair<std::string, TStep*>>;
-        static StepRegistry& getStepRegistry()
-        {
-            static StepRegistry registry;
-            return registry;
-        }
-
-        void setScenarioContext(ScenarioContext* scenarioContext)
-        {
-            _scenarioContext = scenarioContext;
-        }
-
-        template <typename T>
-        std::shared_ptr<T> getFixture()
-        {
-            return _scenarioContext->getFixture<T>();
-        }
-
-    protected:
-        CommonStep(std::string RegEx, TStep* Step)
-        {
-            getStepRegistry().emplace_back(std::make_pair(RegEx, Step));
-        }
-
-    private:
-        ScenarioContext* _scenarioContext;
-    };
-
-    class BaseStep : public CommonStep<BaseStep> {
-    public:
-        virtual ~BaseStep() = default;
-
-    protected:
-        BaseStep(std::string RegEx, BaseStep* Step)
-            : CommonStep<BaseStep>(RegEx, Step)
-        {
-        }
-    };
-
-    enum class Hooktype {
-        Before,
-        After,
-    };
-
-    template <Hooktype hooktype>
-    class BaseHook : public CommonStep<BaseHook<hooktype>> {
-    public:
-        virtual ~BaseHook() = default;
-
-    protected:
-        BaseHook(std::string RegEx, BaseHook<hooktype>* Step)
-            : CommonStep<BaseHook<hooktype>>(RegEx, Step)
-        {
-        }
-    };
-}
-}
-
-#define STEP_INTERNAL(Name, Instance, RegEx)                                \
+#define GURKE_STEP_INTERNAL(Name, Instance, RegEx)                          \
     struct Name : public gurkenlaeufer::detail::BaseStep {                  \
         Name()                                                              \
             : gurkenlaeufer::detail::BaseStep(RegEx, this)                  \
@@ -160,7 +23,7 @@ namespace detail {
     } Instance;                                                             \
     void Name::runStep(gurkenlaeufer::detail::StepContext& stepCtx)
 
-#define BEFORE_HOOK_INTERNAL(Name, Instance, RegEx)                                                 \
+#define GURKE_BEFORE_HOOK_INTERNAL(Name, Instance, RegEx)                                           \
     struct Name : public gurkenlaeufer::detail::BaseHook<gurkenlaeufer::detail::Hooktype::Before> { \
         Name()                                                                                      \
             : gurkenlaeufer::detail::BaseHook<gurkenlaeufer::detail::Hooktype::Before>(RegEx, this) \
@@ -170,7 +33,7 @@ namespace detail {
     } Instance;                                                                                     \
     void Name::runStep(gurkenlaeufer::detail::StepContext& stepCtx)
 
-#define AFTER_HOOK_INTERNAL(Name, Instance, RegEx)                                                 \
+#define GURKE_AFTER_HOOK_INTERNAL(Name, Instance, RegEx)                                           \
     struct Name : public gurkenlaeufer::detail::BaseHook<gurkenlaeufer::detail::Hooktype::After> { \
         Name()                                                                                     \
             : gurkenlaeufer::detail::BaseHook<gurkenlaeufer::detail::Hooktype::After>(RegEx, this) \
@@ -180,17 +43,26 @@ namespace detail {
     } Instance;                                                                                    \
     void Name::runStep(gurkenlaeufer::detail::StepContext& stepCtx)
 
-#define STR2(x) #x
-#define STR(x) x
-#define JOIN(X, Y) DO_JOIN(X, Y)
-#define DO_JOIN(X, Y) DO_JOIN2(X, Y)
-#define DO_JOIN2(X, Y) X##Y
-#define STEP(RegEx) \
-    STEP_INTERNAL(JOIN(JOIN(Step, STR(__COUNTER__)), STR(__LINE__)), JOIN(JOIN(Instance, STR(__COUNTER__)), STR(__LINE__)), RegEx)
-#define BEFORE(RegEx) \
-    BEFORE_HOOK_INTERNAL(JOIN(JOIN(BeforeHook, STR(__COUNTER__)), STR(__LINE__)), JOIN(JOIN(Instance, STR(__COUNTER__)), STR(__LINE__)), RegEx)
-#define AFTER(RegEx) \
-    AFTER_HOOK_INTERNAL(JOIN(JOIN(AfterHook, STR(__COUNTER__)), STR(__LINE__)), JOIN(JOIN(Instance, STR(__COUNTER__)), STR(__LINE__)), RegEx)
+#define GURKE_STR2(x) #x
+#define GURKE_STR(x) x
+#define GURKE_JOIN(X, Y) GURKE_DO_GURKE_JOIN(X, Y)
+#define GURKE_DO_GURKE_JOIN(X, Y) GURKE_GURKE_DO_GURKE_JOIN2(X, Y)
+#define GURKE_GURKE_DO_GURKE_JOIN2(X, Y) X##Y
+#define STEP(RegEx)                                                                                   \
+    GURKE_STEP_INTERNAL(                                                                              \
+        GURKE_JOIN(GURKE_STR(GURKE_STEP_NAME_PREFIX), GURKE_JOIN(_Step, GURKE_STR(__COUNTER__))),     \
+        GURKE_JOIN(GURKE_STR(GURKE_STEP_NAME_PREFIX), GURKE_JOIN(_Instance, GURKE_STR(__COUNTER__))), \
+        RegEx)
+#define BEFORE(RegEx)                                                                                   \
+    GURKE_BEFORE_HOOK_INTERNAL(                                                                         \
+        GURKE_JOIN(GURKE_STR(GURKE_STEP_NAME_PREFIX), GURKE_JOIN(_BeforeHook, GURKE_STR(__COUNTER__))), \
+        GURKE_JOIN(GURKE_STR(GURKE_STEP_NAME_PREFIX), GURKE_JOIN(_Instance, GURKE_STR(__COUNTER__))),   \
+        RegEx)
+#define AFTER(RegEx)                                                                                   \
+    GURKE_AFTER_HOOK_INTERNAL(                                                                         \
+        GURKE_JOIN(GURKE_STR(GURKE_STEP_NAME_PREFIX), GURKE_JOIN(_AfterHook, GURKE_STR(__COUNTER__))), \
+        GURKE_JOIN(GURKE_STR(GURKE_STEP_NAME_PREFIX), GURKE_JOIN(_Instance, GURKE_STR(__COUNTER__))),  \
+        RegEx)
 
 // cucumber-cpp adaption layer
 // to replace cucumber-cpp with gurkenlaeufer you have to do the following:

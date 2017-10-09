@@ -2,7 +2,7 @@
 // include this file one time. In main.cpp for example
 
 #include "ScenarioInterface.h"
-#include "Step.h"
+#include "StepInterface.h"
 #include "gtest/gtest.h"
 #include <regex>
 

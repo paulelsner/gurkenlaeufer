@@ -17,6 +17,7 @@ target_sources(
     ${CMAKE_CURRENT_SOURCE_DIR}/include/gurkenlaeufer/ParserStateFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/gurkenlaeufer/ParserStates.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/gurkenlaeufer/Step.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/gurkenlaeufer/StepInterface.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/gurkenlaeufer/ScenarioCollection.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/gurkenlaeufer/ScenarioInterface.h)
 
