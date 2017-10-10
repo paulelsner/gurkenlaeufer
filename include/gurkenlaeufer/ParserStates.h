@@ -124,8 +124,7 @@ public:
 
         auto firstWord = detail::toLower(std::string(trimmedLine.begin(), firstWordEnd));
         if (isStepKeyword(firstWord)) {
-            auto secondWordBegin = firstWordEnd + 1;
-            _scenario.mainSteps.emplace_back(std::string(secondWordBegin, trimmedLine.end()));
+            _scenario.mainSteps.emplace_back(detail::trim(std::string(firstWordEnd, trimmedLine.end())));
         } else {
             return _factory.createExamplesState(std::move(_scenario), std::move(_backgroundSteps));
         }
@@ -155,8 +154,7 @@ public:
 
         auto firstWord = detail::toLower(std::string(trimmedLine.begin(), firstWordEnd));
         if (isStepKeyword(firstWord)) {
-            auto secondWordBegin = firstWordEnd + 1;
-            _scenario.mainSteps.emplace_back(std::string(secondWordBegin, trimmedLine.end()));
+            _scenario.mainSteps.emplace_back(detail::trim(std::string(firstWordEnd, trimmedLine.end())));
         } else {
             _scenarioCollection->appendScenario(std::move(_scenario));
             return forwardToNextState(trimmedLine, std::move(_backgroundSteps));
@@ -183,8 +181,7 @@ public:
 
         auto firstWord = detail::toLower(std::string(trimmedLine.begin(), firstWordEnd));
         if (isStepKeyword(firstWord)) {
-            auto secondWordBegin = firstWordEnd + 1;
-            _backgroundSteps.emplace_back(std::string(secondWordBegin, trimmedLine.end()));
+            _backgroundSteps.emplace_back(detail::trim(std::string(firstWordEnd, trimmedLine.end())));
         } else {
             return forwardToNextState(trimmedLine, std::move(_backgroundSteps));
         }
