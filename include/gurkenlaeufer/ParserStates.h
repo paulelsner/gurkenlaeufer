@@ -11,22 +11,42 @@ inline bool isStepKeyword(std::string word)
     return word == "given" || word == "when" || word == "then" || word == "and";
 }
 
-class ExamplesState : public ParserState {
-public:
-    ExamplesState(IParserStateFactory& factory, Scenario scenario, Scenario::StepList backgroudSteps, const IScenarioCollectionSPtr& scenarioCollection)
+class CommonParserState : public IParserState {
+protected:
+    CommonParserState(IParserStateFactory& factory)
         : _factory(factory)
+    {
+    }
+
+    std::unique_ptr<IParserState> forwardToNextState(const std::string& trimmedLine, Scenario::StepList backgroundSteps) const
+    {
+        // forward to next state
+        auto initState = _factory.createInitialState(std::move(backgroundSteps));
+        auto nextState = initState->parseLine(trimmedLine);
+        if (nextState != nullptr) {
+            return nextState;
+        }
+        return initState;
+    }
+
+    IParserStateFactory& _factory;
+};
+
+class ExamplesState : public CommonParserState {
+public:
+    ExamplesState(IParserStateFactory& factory, Scenario scenario, Scenario::StepList backgroundSteps, const IScenarioCollectionSPtr& scenarioCollection)
+        : CommonParserState(factory)
         , _scenario(std::move(scenario))
-        , _backgroudSteps(std::move(backgroudSteps))
+        , _backgroundSteps(std::move(backgroundSteps))
         , _scenarioCollection(scenarioCollection)
         , _isTableHead(true)
     {
     }
 
-    std::unique_ptr<ParserState> parseLine(const std::string& trimmedLine) override
+    std::unique_ptr<IParserState> parseLine(const std::string& trimmedLine) override
     {
         if (trimmedLine[0] != '|') {
-            // forward to next state
-            return _factory.createInitialState(std::move(_backgroudSteps))->parseLine(trimmedLine);
+            return forwardToNextState(trimmedLine, std::move(_backgroundSteps));
         }
 
         auto splittedLine = detail::split(trimmedLine, '|');
@@ -80,26 +100,25 @@ private:
         }
     }
 
-    IParserStateFactory& _factory;
     Scenario _scenario;
-    Scenario::StepList _backgroudSteps;
+    Scenario::StepList _backgroundSteps;
     IScenarioCollectionSPtr _scenarioCollection;
     std::vector<std::string> _TableHead;
     bool _isTableHead;
 };
 
-class ScenarioOutlineState : public ParserState {
+class ScenarioOutlineState : public CommonParserState {
 public:
-    ScenarioOutlineState(IParserStateFactory& factory, const std::string& description, Scenario::StepList backgroudSteps, Scenario::StepList tags)
-        : _factory(factory)
-        , _backgroudSteps(std::move(backgroudSteps))
+    ScenarioOutlineState(IParserStateFactory& factory, const std::string& description, Scenario::StepList backgroundSteps, Scenario::StepList tags)
+        : CommonParserState(factory)
+        , _backgroundSteps(std::move(backgroundSteps))
     {
         _scenario.description = description;
-        _scenario.mainSteps = _backgroudSteps;
+        _scenario.mainSteps = _backgroundSteps;
         _scenario.tags = tags;
     }
 
-    std::unique_ptr<ParserState> parseLine(const std::string& trimmedLine) override
+    std::unique_ptr<IParserState> parseLine(const std::string& trimmedLine) override
     {
         auto firstWordEnd = std::find_if(trimmedLine.begin(), trimmedLine.end(), ::isspace);
 
@@ -108,30 +127,29 @@ public:
             auto secondWordBegin = firstWordEnd + 1;
             _scenario.mainSteps.emplace_back(std::string(secondWordBegin, trimmedLine.end()));
         } else {
-            return _factory.createExamplesState(std::move(_scenario), std::move(_backgroudSteps));
+            return _factory.createExamplesState(std::move(_scenario), std::move(_backgroundSteps));
         }
         return nullptr;
     }
 
 private:
-    IParserStateFactory& _factory;
-    Scenario::StepList _backgroudSteps;
+    Scenario::StepList _backgroundSteps;
     Scenario _scenario;
 };
 
-class ScenarioState : public ParserState {
+class ScenarioState : public CommonParserState {
 public:
-    ScenarioState(IParserStateFactory& factory, const std::string& description, Scenario::StepList backgroudSteps, Scenario::StepList tags, const IScenarioCollectionSPtr& testcases)
-        : _factory(factory)
-        , _backgroudSteps(std::move(backgroudSteps))
+    ScenarioState(IParserStateFactory& factory, const std::string& description, Scenario::StepList backgroundSteps, Scenario::StepList tags, const IScenarioCollectionSPtr& testcases)
+        : CommonParserState(factory)
+        , _backgroundSteps(std::move(backgroundSteps))
         , _scenarioCollection(testcases)
     {
         _scenario.description = description;
-        _scenario.mainSteps = _backgroudSteps;
+        _scenario.mainSteps = _backgroundSteps;
         _scenario.tags = tags;
     }
 
-    std::unique_ptr<ParserState> parseLine(const std::string& trimmedLine) override
+    std::unique_ptr<IParserState> parseLine(const std::string& trimmedLine) override
     {
         auto firstWordEnd = std::find_if(trimmedLine.begin(), trimmedLine.end(), ::isspace);
 
@@ -141,65 +159,51 @@ public:
             _scenario.mainSteps.emplace_back(std::string(secondWordBegin, trimmedLine.end()));
         } else {
             _scenarioCollection->appendScenario(std::move(_scenario));
-            // forward to next state
-            auto initState = _factory.createInitialState(std::move(_backgroudSteps));
-            auto nextState = initState->parseLine(trimmedLine);
-            if (nextState != nullptr) {
-                return nextState;
-            }
-            return initState;
+            return forwardToNextState(trimmedLine, std::move(_backgroundSteps));
         }
         return nullptr;
     }
 
 private:
-    IParserStateFactory& _factory;
-    Scenario::StepList _backgroudSteps;
+    Scenario::StepList _backgroundSteps;
     IScenarioCollectionSPtr _scenarioCollection;
     Scenario _scenario;
 };
 
-class BackgroundState : public ParserState {
+class BackgroundState : public CommonParserState {
 public:
     BackgroundState(IParserStateFactory& factory)
-        : _factory(factory)
+        : CommonParserState(factory)
     {
     }
 
-    std::unique_ptr<ParserState> parseLine(const std::string& trimmedLine) override
+    std::unique_ptr<IParserState> parseLine(const std::string& trimmedLine) override
     {
         auto firstWordEnd = std::find_if(trimmedLine.begin(), trimmedLine.end(), ::isspace);
 
         auto firstWord = detail::toLower(std::string(trimmedLine.begin(), firstWordEnd));
         if (isStepKeyword(firstWord)) {
             auto secondWordBegin = firstWordEnd + 1;
-            _Steps.emplace_back(std::string(secondWordBegin, trimmedLine.end()));
+            _backgroundSteps.emplace_back(std::string(secondWordBegin, trimmedLine.end()));
         } else {
-            // forward to next state
-            auto initState = _factory.createInitialState(std::move(_Steps));
-            auto nextState = initState->parseLine(trimmedLine);
-            if (nextState != nullptr) {
-                return nextState;
-            }
-            return initState;
+            return forwardToNextState(trimmedLine, std::move(_backgroundSteps));
         }
         return nullptr;
     }
 
 private:
-    IParserStateFactory& _factory;
-    Scenario::StepList _Steps;
+    Scenario::StepList _backgroundSteps;
 };
 
-class InitialState : public ParserState {
+class InitialState : public IParserState {
 public:
-    InitialState(IParserStateFactory& factory, Scenario::StepList backgroudSteps)
+    InitialState(IParserStateFactory& factory, Scenario::StepList backgroundSteps)
         : _factory(factory)
-        , _backgroundSteps(std::move(backgroudSteps))
+        , _backgroundSteps(std::move(backgroundSteps))
     {
     }
 
-    std::unique_ptr<ParserState> parseLine(const std::string& trimmedLine) override
+    std::unique_ptr<IParserState> parseLine(const std::string& trimmedLine) override
     {
         auto firstWordEnd = std::find_if(trimmedLine.begin(), trimmedLine.end(), ::isspace);
 

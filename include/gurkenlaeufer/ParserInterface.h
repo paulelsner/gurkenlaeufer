@@ -4,11 +4,11 @@
 
 namespace gurkenlaeufer {
 
-struct ParserState {
-    virtual std::unique_ptr<ParserState> parseLine(const std::string& trimmedLine) = 0;
+struct IParserState {
+    virtual std::unique_ptr<IParserState> parseLine(const std::string& trimmedLine) = 0;
 };
 
-using ParserStatePtr = std::unique_ptr<ParserState>;
+using ParserStatePtr = std::unique_ptr<IParserState>;
 
 struct IParserStateFactory {
     virtual ParserStatePtr createInitialState(Scenario::StepList backgroudSteps) = 0;
