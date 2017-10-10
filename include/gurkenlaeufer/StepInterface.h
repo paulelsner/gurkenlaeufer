@@ -1,5 +1,6 @@
 #pragma once
 
+#include <sstream>
 #include <list>
 #include <memory>
 #include <string>
@@ -82,7 +83,7 @@ namespace detail {
         }
 
     private:
-        const std::vector<std::string> _params;
+        std::vector<std::string> _params;
         std::size_t _currentParamIdx = 0u;
     };
 
@@ -90,7 +91,7 @@ namespace detail {
     class CommonStep {
     public:
         virtual ~CommonStep() = default;
-        virtual void runStep(StepContext&) = 0;
+        virtual void runStep() = 0;
 
         using StepRegistry = std::list<std::pair<std::string, TStep*>>;
         static StepRegistry& getStepRegistry()
@@ -110,14 +111,33 @@ namespace detail {
             return _scenarioContext->getFixture<T>();
         }
 
+        void setStepContext(StepContext&& stepContext)
+        {
+            _stepContext = std::move(stepContext);
+        }
+
+        template <typename T>
+        T getParam(std::size_t i) const
+        {
+            return _stepContext.getParam<T>(i);
+        }
+
+        template <typename T>
+        const T getNextParam()
+        {
+            return _stepContext.getNextParam<T>();
+        }
+
     protected:
         CommonStep(std::string RegEx, TStep* Step)
+            : _stepContext({})
         {
             getStepRegistry().emplace_back(std::make_pair(RegEx, Step));
         }
 
     private:
         ScenarioContext* _scenarioContext;
+        StepContext _stepContext;
     };
 
     class BaseStep : public CommonStep<BaseStep> {

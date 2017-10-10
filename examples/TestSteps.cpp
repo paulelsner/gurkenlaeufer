@@ -1,3 +1,5 @@
+#define GURKE_STEP_NAME_PREFIX TestSteps
+
 #include "gurkenlaeufer/Step.h"
 #include "gtest/gtest.h"
 #include <iostream>
@@ -11,12 +13,12 @@ GIVEN(".*have entered (\\d+) into the calculator$")
 {
     // This step uses the gurkenlaeufer native API
     auto calc = getFixture<Calculator>();
-    calc->values.push_back(stepCtx.getNextParam<int>());
+    calc->values.push_back(getNextParam<int>());
 }
 
 WHEN(".*press (\\w+)")
 {
-    std::cout << stepCtx.getNextParam<std::string>() << std::endl;
+    std::cout << getNextParam<std::string>() << std::endl;
 }
 
 STEP(".*nostep")

@@ -19,9 +19,9 @@
             : gurkenlaeufer::detail::BaseStep(RegEx, this)                  \
         {                                                                   \
         }                                                                   \
-        void runStep(gurkenlaeufer::detail::StepContext& stepCtx) override; \
+        void runStep() override; \
     } Instance;                                                             \
-    void Name::runStep(gurkenlaeufer::detail::StepContext& stepCtx)
+    void Name::runStep()
 
 #define GURKE_BEFORE_HOOK_INTERNAL(Name, Instance, RegEx)                                           \
     struct Name : public gurkenlaeufer::detail::BaseHook<gurkenlaeufer::detail::Hooktype::Before> { \
@@ -29,9 +29,9 @@
             : gurkenlaeufer::detail::BaseHook<gurkenlaeufer::detail::Hooktype::Before>(RegEx, this) \
         {                                                                                           \
         }                                                                                           \
-        void runStep(gurkenlaeufer::detail::StepContext& stepCtx) override;                         \
+        void runStep() override;                         \
     } Instance;                                                                                     \
-    void Name::runStep(gurkenlaeufer::detail::StepContext& stepCtx)
+    void Name::runStep()
 
 #define GURKE_AFTER_HOOK_INTERNAL(Name, Instance, RegEx)                                           \
     struct Name : public gurkenlaeufer::detail::BaseHook<gurkenlaeufer::detail::Hooktype::After> { \
@@ -39,9 +39,9 @@
             : gurkenlaeufer::detail::BaseHook<gurkenlaeufer::detail::Hooktype::After>(RegEx, this) \
         {                                                                                          \
         }                                                                                          \
-        void runStep(gurkenlaeufer::detail::StepContext& stepCtx) override;                        \
+        void runStep() override;                        \
     } Instance;                                                                                    \
-    void Name::runStep(gurkenlaeufer::detail::StepContext& stepCtx)
+    void Name::runStep()
 
 #define GURKE_STR2(x) #x
 #define GURKE_STR(x) x
@@ -71,7 +71,7 @@
 #define GIVEN(RegEx) STEP(RegEx)
 #define WHEN(RegEx) STEP(RegEx)
 #define THEN(RegEx) STEP(RegEx)
-#define REGEX_PARAM(type, name) const type name(stepCtx.getNextParam<type>())
+#define REGEX_PARAM(type, name) const type name(getNextParam<type>())
 
 namespace gurkenlaeufer {
 template <class T>
@@ -92,7 +92,7 @@ template <class T>
 template <class TStep>
 ScenarioScope<T>::ScenarioScope(detail::CommonStep<TStep>* ptr)
 {
-    context = ptr->getFixture<T>();
+    context = ptr->template getFixture<T>();
 }
 
 template <class T>
