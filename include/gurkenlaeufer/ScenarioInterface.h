@@ -7,6 +7,7 @@
 namespace gurkenlaeufer {
 
 struct Scenario {
+    std::string description;
     using StepList = std::list<std::string>;
     StepList tags;
     StepList mainSteps;

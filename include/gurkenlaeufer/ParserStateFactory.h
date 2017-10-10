@@ -8,8 +8,8 @@ namespace gurkenlaeufer {
 
 class ParserStateFactory : public IParserStateFactory {
 public:
-    ParserStateFactory(const IScenarioCollectionSPtr& testcases)
-        : _testcases(testcases)
+    ParserStateFactory(const IScenarioCollectionSPtr& scenarioCollection)
+        : _scenarioCollection(scenarioCollection)
     {
     }
 
@@ -19,15 +19,15 @@ public:
     }
     ParserStatePtr createExamplesState(Scenario scenario, Scenario::StepList backgroudSteps) override
     {
-        return ParserStatePtr(new ExamplesState(*this, std::move(scenario), std::move(backgroudSteps), _testcases));
+        return ParserStatePtr(new ExamplesState(*this, std::move(scenario), std::move(backgroudSteps), _scenarioCollection));
     }
-    ParserStatePtr createScenarioState(Scenario::StepList backgroudSteps, Scenario::StepList tags) override
+    ParserStatePtr createScenarioState(const std::string& description, Scenario::StepList backgroudSteps, Scenario::StepList tags) override
     {
-        return ParserStatePtr(new ScenarioState(*this, std::move(backgroudSteps), std::move(tags), _testcases));
+        return ParserStatePtr(new ScenarioState(*this, description, std::move(backgroudSteps), std::move(tags), _scenarioCollection));
     }
-    ParserStatePtr createScenarioOutlineState(Scenario::StepList backgroudSteps, Scenario::StepList tags) override
+    ParserStatePtr createScenarioOutlineState(const std::string& description, Scenario::StepList backgroudSteps, Scenario::StepList tags) override
     {
-        return ParserStatePtr(new ScenarioOutlineState(*this, std::move(backgroudSteps), std::move(tags)));
+        return ParserStatePtr(new ScenarioOutlineState(*this, description, std::move(backgroudSteps), std::move(tags)));
     }
 
     ParserStatePtr createBackgroundState() override
@@ -36,6 +36,6 @@ public:
     }
 
 private:
-    IScenarioCollectionSPtr _testcases;
+    IScenarioCollectionSPtr _scenarioCollection;
 };
 }

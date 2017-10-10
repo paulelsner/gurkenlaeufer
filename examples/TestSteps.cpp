@@ -37,12 +37,12 @@ THEN(".*the result should be (\\d+) on the screen$")
     EXPECT_EQ(result, sum);
 }
 
-BEFORE("Print")
+BEFORE("@Print")
 {
     std::cout << "ctrl + p" << std::endl;
 }
 
-AFTER("Echo")
+AFTER("@Echo")
 {
     std::cout << "echo ho ho ho" << std::endl;
 }

@@ -13,8 +13,8 @@ using ParserStatePtr = std::unique_ptr<ParserState>;
 struct IParserStateFactory {
     virtual ParserStatePtr createInitialState(Scenario::StepList backgroudSteps) = 0;
     virtual ParserStatePtr createExamplesState(Scenario testCase, Scenario::StepList backgroudSteps) = 0;
-    virtual ParserStatePtr createScenarioState(Scenario::StepList backgroudSteps, Scenario::StepList tags) = 0;
-    virtual ParserStatePtr createScenarioOutlineState(Scenario::StepList backgroudSteps, Scenario::StepList tags) = 0;
+    virtual ParserStatePtr createScenarioState(const std::string& description, Scenario::StepList backgroudSteps, Scenario::StepList tags) = 0;
+    virtual ParserStatePtr createScenarioOutlineState(const std::string& description, Scenario::StepList backgroudSteps, Scenario::StepList tags) = 0;
     virtual ParserStatePtr createBackgroundState() = 0;
 };
 
