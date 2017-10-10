@@ -32,7 +32,7 @@ Feature: Addition
   Scenario Outline: Add two numbers with comments and two tags
     # A comment should be possible here
     Given I have entered <input_1> into the calculator
-    And I have entered <input 2> into the calculator
+    And I have entered <input 2> into the calculator # A comment should be possible here
     # A comment should be possible here
     When I press <button>
     Then the result should be <output> on the screen

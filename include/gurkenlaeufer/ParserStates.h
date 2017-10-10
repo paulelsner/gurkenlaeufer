@@ -20,7 +20,6 @@ protected:
 
     std::unique_ptr<IParserState> forwardToNextState(const std::string& trimmedLine, Scenario::StepList backgroundSteps) const
     {
-        // forward to next state
         auto initState = _factory.createInitialState(std::move(backgroundSteps));
         auto nextState = initState->parseLine(trimmedLine);
         if (nextState != nullptr) {

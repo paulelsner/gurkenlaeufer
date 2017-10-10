@@ -24,9 +24,18 @@ public:
 
         for (std::string line; std::getline(fin, line);) {
             std::cout << line << std::endl;
+
+            // Trim off comments
+            auto isCommentSign = [](int c) { return c == '#'; };
+            const auto commentBegin = std::find_if(line.begin(), line.end(), isCommentSign);
+            if (commentBegin != line.end()) {
+                line = std::string(line.begin(), commentBegin);
+            }
+
+            // Trim off whitespace
             auto trimmedLine = detail::trim(line);
 
-            if (trimmedLine.empty() || trimmedLine[0] == '#') {
+            if (trimmedLine.empty()) {
                 continue;
             }
 
