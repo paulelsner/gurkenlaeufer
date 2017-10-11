@@ -8,7 +8,7 @@ namespace gurkenlaeufer {
 
 inline bool isStepKeyword(std::string word)
 {
-    return word == "given" || word == "when" || word == "then" || word == "and";
+    return word == "given" || word == "when" || word == "then" || word == "and" || word == "but";
 }
 
 class CommonParserState : public IParserState {
