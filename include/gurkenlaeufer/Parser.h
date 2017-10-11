@@ -7,7 +7,7 @@
 #include <string>
 
 namespace gurkenlaeufer {
-class Parser {
+class Parser final {
 public:
     Parser(IParserStateFactoryPtr Factory)
         : _factory(std::move(Factory))
@@ -57,6 +57,6 @@ public:
 
 private:
     IParserStateFactoryPtr _factory;
-    ParserStatePtr _currentState;
+    IParserStatePtr _currentState;
 };
 }

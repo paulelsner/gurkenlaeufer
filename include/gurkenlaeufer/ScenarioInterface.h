@@ -14,6 +14,8 @@ struct Scenario {
 };
 
 struct IScenarioCollection {
+    virtual ~IScenarioCollection() = default;
+
     virtual void appendScenario(Scenario steps) = 0;
     virtual std::list<Scenario> getScenarios() const = 0;
 };

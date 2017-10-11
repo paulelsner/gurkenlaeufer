@@ -6,33 +6,33 @@
 
 namespace gurkenlaeufer {
 
-class ParserStateFactory : public IParserStateFactory {
+class ParserStateFactory final : public IParserStateFactory {
 public:
     ParserStateFactory(const IScenarioCollectionSPtr& scenarioCollection)
         : _scenarioCollection(scenarioCollection)
     {
     }
 
-    ParserStatePtr createInitialState(Scenario::StepList backgroudSteps) override
+    IParserStatePtr createInitialState(Scenario::StepList backgroudSteps) override
     {
-        return ParserStatePtr(new InitialState(*this, std::move(backgroudSteps)));
+        return IParserStatePtr(new InitialState(*this, std::move(backgroudSteps)));
     }
-    ParserStatePtr createExamplesState(Scenario scenario, Scenario::StepList backgroudSteps) override
+    IParserStatePtr createExamplesState(Scenario scenario, Scenario::StepList backgroudSteps) override
     {
-        return ParserStatePtr(new ExamplesState(*this, std::move(scenario), std::move(backgroudSteps), _scenarioCollection));
+        return IParserStatePtr(new ExamplesState(*this, std::move(scenario), std::move(backgroudSteps), _scenarioCollection));
     }
-    ParserStatePtr createScenarioState(const std::string& description, Scenario::StepList backgroudSteps, Scenario::StepList tags) override
+    IParserStatePtr createScenarioState(const std::string& description, Scenario::StepList backgroudSteps, Scenario::StepList tags) override
     {
-        return ParserStatePtr(new ScenarioState(*this, description, std::move(backgroudSteps), std::move(tags), _scenarioCollection));
+        return IParserStatePtr(new ScenarioState(*this, description, std::move(backgroudSteps), std::move(tags), _scenarioCollection));
     }
-    ParserStatePtr createScenarioOutlineState(const std::string& description, Scenario::StepList backgroudSteps, Scenario::StepList tags) override
+    IParserStatePtr createScenarioOutlineState(const std::string& description, Scenario::StepList backgroudSteps, Scenario::StepList tags) override
     {
-        return ParserStatePtr(new ScenarioOutlineState(*this, description, std::move(backgroudSteps), std::move(tags)));
+        return IParserStatePtr(new ScenarioOutlineState(*this, description, std::move(backgroudSteps), std::move(tags)));
     }
 
-    ParserStatePtr createBackgroundState() override
+    IParserStatePtr createBackgroundState() override
     {
-        return ParserStatePtr(new BackgroundState(*this));
+        return IParserStatePtr(new BackgroundState(*this));
     }
 
 private:

@@ -31,7 +31,7 @@ protected:
     IParserStateFactory& _factory;
 };
 
-class ExamplesState : public CommonParserState {
+class ExamplesState final : public CommonParserState {
 public:
     ExamplesState(IParserStateFactory& factory, Scenario scenario, Scenario::StepList backgroundSteps, const IScenarioCollectionSPtr& scenarioCollection)
         : CommonParserState(factory)
@@ -106,7 +106,7 @@ private:
     bool _isTableHead;
 };
 
-class ScenarioOutlineState : public CommonParserState {
+class ScenarioOutlineState final : public CommonParserState {
 public:
     ScenarioOutlineState(IParserStateFactory& factory, const std::string& description, Scenario::StepList backgroundSteps, Scenario::StepList tags)
         : CommonParserState(factory)
@@ -135,7 +135,7 @@ private:
     Scenario _scenario;
 };
 
-class ScenarioState : public CommonParserState {
+class ScenarioState final : public CommonParserState {
 public:
     ScenarioState(IParserStateFactory& factory, const std::string& description, Scenario::StepList backgroundSteps, Scenario::StepList tags, const IScenarioCollectionSPtr& testcases)
         : CommonParserState(factory)
@@ -167,7 +167,7 @@ private:
     Scenario _scenario;
 };
 
-class BackgroundState : public CommonParserState {
+class BackgroundState final : public CommonParserState {
 public:
     BackgroundState(IParserStateFactory& factory)
         : CommonParserState(factory)
@@ -191,7 +191,7 @@ private:
     Scenario::StepList _backgroundSteps;
 };
 
-class InitialState : public IParserState {
+class InitialState final : public IParserState {
 public:
     InitialState(IParserStateFactory& factory, Scenario::StepList backgroundSteps)
         : _factory(factory)

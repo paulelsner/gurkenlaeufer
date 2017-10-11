@@ -4,7 +4,7 @@
 
 namespace gurkenlaeufer {
 
-class ScenarioCollection : public IScenarioCollection {
+class ScenarioCollection final : public IScenarioCollection {
 public:
     void appendScenario(Scenario scenario)
     {

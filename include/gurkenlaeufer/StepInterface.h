@@ -14,10 +14,10 @@ namespace detail {
     };
 
     template <typename T>
-    struct Fixture : public IFixture, public T {
+    struct Fixture final : public IFixture, public T {
     };
 
-    class ScenarioContext {
+    class ScenarioContext final {
         std::vector<std::shared_ptr<IFixture>> _fixtures;
 
     public:
@@ -60,7 +60,7 @@ namespace detail {
         return s;
     }
 
-    class StepContext {
+    class StepContext final {
     public:
         StepContext(std::vector<std::string>&& params)
             : _params(std::move(params))
@@ -141,9 +141,6 @@ namespace detail {
     };
 
     class BaseStep : public CommonStep<BaseStep> {
-    public:
-        virtual ~BaseStep() = default;
-
     protected:
         BaseStep(std::string RegEx, BaseStep* Step)
             : CommonStep<BaseStep>(RegEx, Step)
@@ -158,9 +155,6 @@ namespace detail {
 
     template <Hooktype hooktype>
     class BaseHook : public CommonStep<BaseHook<hooktype>> {
-    public:
-        virtual ~BaseHook() = default;
-
     protected:
         BaseHook(std::string RegEx, BaseHook<hooktype>* Step)
             : CommonStep<BaseHook<hooktype>>(RegEx, Step)

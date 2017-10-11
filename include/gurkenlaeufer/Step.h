@@ -13,34 +13,34 @@
 #error GURKE_STEP_NAME_PREFIX has to be defined!
 #endif
 
-#define GURKE_STEP_INTERNAL(Name, Instance, RegEx)                          \
-    struct Name : public gurkenlaeufer::detail::BaseStep {                  \
-        Name()                                                              \
-            : gurkenlaeufer::detail::BaseStep(RegEx, this)                  \
-        {                                                                   \
-        }                                                                   \
-        void runStep() override; \
-    } Instance;                                                             \
+#define GURKE_STEP_INTERNAL(Name, Instance, RegEx)               \
+    struct Name final : public gurkenlaeufer::detail::BaseStep { \
+        Name()                                                   \
+            : gurkenlaeufer::detail::BaseStep(RegEx, this)       \
+        {                                                        \
+        }                                                        \
+        void runStep() override;                                 \
+    } Instance;                                                  \
     void Name::runStep()
 
-#define GURKE_BEFORE_HOOK_INTERNAL(Name, Instance, RegEx)                                           \
-    struct Name : public gurkenlaeufer::detail::BaseHook<gurkenlaeufer::detail::Hooktype::Before> { \
-        Name()                                                                                      \
-            : gurkenlaeufer::detail::BaseHook<gurkenlaeufer::detail::Hooktype::Before>(RegEx, this) \
-        {                                                                                           \
-        }                                                                                           \
-        void runStep() override;                         \
-    } Instance;                                                                                     \
+#define GURKE_BEFORE_HOOK_INTERNAL(Name, Instance, RegEx)                                                 \
+    struct Name final : public gurkenlaeufer::detail::BaseHook<gurkenlaeufer::detail::Hooktype::Before> { \
+        Name()                                                                                            \
+            : gurkenlaeufer::detail::BaseHook<gurkenlaeufer::detail::Hooktype::Before>(RegEx, this)       \
+        {                                                                                                 \
+        }                                                                                                 \
+        void runStep() override;                                                                          \
+    } Instance;                                                                                           \
     void Name::runStep()
 
-#define GURKE_AFTER_HOOK_INTERNAL(Name, Instance, RegEx)                                           \
-    struct Name : public gurkenlaeufer::detail::BaseHook<gurkenlaeufer::detail::Hooktype::After> { \
-        Name()                                                                                     \
-            : gurkenlaeufer::detail::BaseHook<gurkenlaeufer::detail::Hooktype::After>(RegEx, this) \
-        {                                                                                          \
-        }                                                                                          \
-        void runStep() override;                        \
-    } Instance;                                                                                    \
+#define GURKE_AFTER_HOOK_INTERNAL(Name, Instance, RegEx)                                                 \
+    struct Name final : public gurkenlaeufer::detail::BaseHook<gurkenlaeufer::detail::Hooktype::After> { \
+        Name()                                                                                           \
+            : gurkenlaeufer::detail::BaseHook<gurkenlaeufer::detail::Hooktype::After>(RegEx, this)       \
+        {                                                                                                \
+        }                                                                                                \
+        void runStep() override;                                                                         \
+    } Instance;                                                                                          \
     void Name::runStep()
 
 #define GURKE_STR2(x) #x

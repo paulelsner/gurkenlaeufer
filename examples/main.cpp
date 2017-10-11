@@ -8,12 +8,12 @@
 // gurkenlaeufer GTestRunner requires to implement this function
 std::list<gurkenlaeufer::Scenario> gurkenlaeufer::getScenarios()
 {
-    auto testCases = std::make_shared<gurkenlaeufer::ScenarioCollection>();
+    auto scenarios = std::make_shared<gurkenlaeufer::ScenarioCollection>();
 
-    Parser parser(IParserStateFactoryPtr(new gurkenlaeufer::ParserStateFactory(testCases)));
+    Parser parser(IParserStateFactoryPtr(new gurkenlaeufer::ParserStateFactory(scenarios)));
     parser.parseFile("addition.feature");
 
-    return testCases->getScenarios();
+    return scenarios->getScenarios();
 }
 
 int main(int argc, char** argv)
