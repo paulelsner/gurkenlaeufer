@@ -9,14 +9,14 @@ struct Calculator {
     std::vector<int> values;
 };
 
-GIVEN(".*have entered (\\d+) into the calculator$")
+STEP(".*have entered (\\d+) into the calculator$")
 {
     // This step uses the gurkenlaeufer native API
     auto calc = getFixture<Calculator>();
     calc->values.push_back(getNextParam<int>());
 }
 
-WHEN(".*press (\\w+)")
+STEP(".*press (\\w+)")
 {
     std::cout << getNextParam<std::string>() << std::endl;
 }
@@ -25,14 +25,14 @@ STEP(".*nostep")
 {
 }
 
-THEN(".*the result should be (\\d+) on the screen$")
+STEP(".*the result should be (\\d+) on the screen$")
 {
     // This step uses the cucumber-cpp adaption layer
-    gurkenlaeufer::ScenarioScope<Calculator> calc(this);
+    auto calc = getFixture<Calculator>();
     int sum = 0;
     for (auto& n : calc->values)
         sum += n;
-    REGEX_PARAM(int, result);
+    auto result = getParam<int>(0u);
     std::cout << "Sum=" << sum << " " << result << std::endl;
     EXPECT_EQ(result, sum);
 }

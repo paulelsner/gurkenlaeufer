@@ -2,13 +2,6 @@
 
 #include "StepInterface.h"
 
-// cucumber-cpp adaption of CUKE_OBJECT_PREFIX
-#ifndef GURKE_STEP_NAME_PREFIX
-#ifdef CUKE_OBJECT_PREFIX
-#define GURKE_STEP_NAME_PREFIX CUKE_OBJECT_PREFIX
-#endif
-#endif
-
 #ifndef GURKE_STEP_NAME_PREFIX
 #error GURKE_STEP_NAME_PREFIX has to be defined!
 #endif
@@ -63,53 +56,3 @@
         GURKE_JOIN(GURKE_STR(GURKE_STEP_NAME_PREFIX), GURKE_JOIN(_AfterHook, GURKE_STR(__COUNTER__))), \
         GURKE_JOIN(GURKE_STR(GURKE_STEP_NAME_PREFIX), GURKE_JOIN(_Instance, GURKE_STR(__COUNTER__))),  \
         RegEx)
-
-// cucumber-cpp adaption layer
-// to replace cucumber-cpp with gurkenlaeufer you have to do the following:
-// * #include "gurkenlaeufer/Step.h" instead of cucumber-cpp for your step definitions
-// * replace "cucumber::ScenarioScope<Context> Ctx;" by "gurkenlaeufer::ScenarioScope<Context> Ctx(this);"
-#define GIVEN(RegEx) STEP(RegEx)
-#define WHEN(RegEx) STEP(RegEx)
-#define THEN(RegEx) STEP(RegEx)
-#define REGEX_PARAM(type, name) const type name(getNextParam<type>())
-
-namespace gurkenlaeufer {
-template <class T>
-class ScenarioScope {
-public:
-    template <class TStep>
-    ScenarioScope(detail::CommonStep<TStep>* ptr);
-
-    T& operator*();
-    T* operator->();
-    T* get();
-
-private:
-    std::shared_ptr<T> context;
-};
-
-template <class T>
-template <class TStep>
-ScenarioScope<T>::ScenarioScope(detail::CommonStep<TStep>* ptr)
-{
-    context = ptr->template getFixture<T>();
-}
-
-template <class T>
-T& ScenarioScope<T>::operator*()
-{
-    return *(context.get());
-}
-
-template <class T>
-T* ScenarioScope<T>::operator->()
-{
-    return (context.get());
-}
-
-template <class T>
-T* ScenarioScope<T>::get()
-{
-    return context.get();
-}
-}
