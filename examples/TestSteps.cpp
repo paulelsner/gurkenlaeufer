@@ -37,6 +37,12 @@ STEP(".*the result should be (\\d+) on the screen$")
     EXPECT_EQ(result, sum);
 }
 
+STEP(".*nobody should know")
+{
+    auto docString = getNextParam<std::string>();
+    std::cout << docString << std::endl;
+}
+
 BEFORE("@Print")
 {
     std::cout << "ctrl + p" << std::endl;

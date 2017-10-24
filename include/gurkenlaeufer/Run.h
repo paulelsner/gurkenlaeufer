@@ -2,8 +2,8 @@
 
 #include "ScenarioInterface.h"
 #include "StepInterface.h"
-#include <regex>
 #include <iostream>
+#include <regex>
 
 namespace gurkenlaeufer {
 namespace detail {
@@ -14,7 +14,7 @@ namespace detail {
     };
 
     template <typename T>
-    void runStepList(ScenarioContext& scenarioContext, const Scenario::StepList& list, const T& registry, bool ignoreNotFound)
+    void runStepList(ScenarioContext& scenarioContext, const std::list<Step>& list, const T& registry, bool ignoreNotFound)
     {
         for (const auto& step : list) {
 
@@ -22,31 +22,30 @@ namespace detail {
 
             for (const auto& entry : registry) {
                 std::smatch match;
-                if (std::regex_match(step, match, std::regex(entry.first))) {
+                if (std::regex_match(step.step, match, std::regex(entry.first))) {
                     MatchingSteps<T> mathingStep;
                     mathingStep.stepDefinition = &entry;
                     for (size_t i = 1; i < match.size(); ++i) {
                         mathingStep.params.emplace_back(match[i]);
                     }
+                    mathingStep.params.emplace_back(step.docString);
                     matchingSteps.push_back(mathingStep);
                 }
             }
 
-            if(matchingSteps.size() > 1u) {
-                std::string msg = "Ambiguous step definitions found for step: '" + step + "'. \nPossible matches:";
+            if (matchingSteps.size() > 1u) {
+                std::string msg = "Ambiguous step definitions found for step: '" + step.step + "'. \nPossible matches:";
                 for (const auto& matchingStep : matchingSteps) {
                     msg += "\n'" + matchingStep.stepDefinition->first + "'";
                 }
                 throw std::runtime_error(msg.c_str());
-            }
-            else if (matchingSteps.size() == 0u) {
-                if(!ignoreNotFound) {
-                    throw std::runtime_error("Did not find matching step for line: " + step);
+            } else if (matchingSteps.size() == 0u) {
+                if (!ignoreNotFound) {
+                    throw std::runtime_error("Did not find matching step for line: " + step.step);
                 }
-            }
-            else {
+            } else {
                 auto& matchingStep = matchingSteps[0u];
-                std::cout << "[" << step << "]" << std::endl;
+                std::cout << "[" << step.step << "]" << std::endl;
                 matchingStep.stepDefinition->second->setScenarioContext(&scenarioContext);
                 StepContext stepCtx(std::move(matchingStep.params));
                 matchingStep.stepDefinition->second->setStepContext(std::move(stepCtx));

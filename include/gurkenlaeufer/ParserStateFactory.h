@@ -13,21 +13,17 @@ public:
     {
     }
 
-    IParserStatePtr createInitialState(Scenario::StepList backgroudSteps) override
+    IParserStatePtr createInitialState(std::list<Step> backgroudSteps) override
     {
         return IParserStatePtr(new InitialState(*this, std::move(backgroudSteps)));
     }
-    IParserStatePtr createExamplesState(Scenario scenario, Scenario::StepList backgroudSteps) override
+    IParserStatePtr createExamplesState(Scenario scenario, std::list<Step> backgroudSteps) override
     {
         return IParserStatePtr(new ExamplesState(*this, std::move(scenario), std::move(backgroudSteps), _scenarioCollection));
     }
-    IParserStatePtr createScenarioState(const std::string& description, Scenario::StepList backgroudSteps, Scenario::StepList tags) override
+    IParserStatePtr createScenarioState(bool scenariouOutline, const std::string& description, std::list<Step> backgroudSteps, std::list<Step> tags) override
     {
-        return IParserStatePtr(new ScenarioState(*this, description, std::move(backgroudSteps), std::move(tags), _scenarioCollection));
-    }
-    IParserStatePtr createScenarioOutlineState(const std::string& description, Scenario::StepList backgroudSteps, Scenario::StepList tags) override
-    {
-        return IParserStatePtr(new ScenarioOutlineState(*this, description, std::move(backgroudSteps), std::move(tags)));
+        return IParserStatePtr(new ScenarioState(*this, scenariouOutline, description, std::move(backgroudSteps), std::move(tags), _scenarioCollection));
     }
 
     IParserStatePtr createBackgroundState() override
