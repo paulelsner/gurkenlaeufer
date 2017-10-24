@@ -13,13 +13,15 @@ target_sources(
     INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/include/gurkenlaeufer/GTestRunner.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/gurkenlaeufer/Parser.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/gurkenlaeufer/ParserCommon.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/gurkenlaeufer/ParserInterface.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/gurkenlaeufer/ParserStateFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/gurkenlaeufer/ParserStates.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/gurkenlaeufer/Step.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/gurkenlaeufer/StepInterface.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/gurkenlaeufer/Run.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/gurkenlaeufer/ScenarioCollection.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/gurkenlaeufer/ScenarioInterface.h)
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/gurkenlaeufer/ScenarioInterface.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/gurkenlaeufer/Step.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/gurkenlaeufer/StepInterface.h)
 
 target_include_directories(gurkenlaeufer INTERFACE include/)
 
