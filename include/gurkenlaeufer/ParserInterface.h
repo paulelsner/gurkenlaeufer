@@ -15,10 +15,9 @@ using IParserStatePtr = std::unique_ptr<IParserState>;
 struct IParserStateFactory {
     virtual ~IParserStateFactory() = default;
 
-    virtual IParserStatePtr createInitialState(Scenario::StepList backgroudSteps) = 0;
-    virtual IParserStatePtr createExamplesState(Scenario testCase, Scenario::StepList backgroudSteps) = 0;
-    virtual IParserStatePtr createScenarioState(const std::string& description, Scenario::StepList backgroudSteps, Scenario::StepList tags) = 0;
-    virtual IParserStatePtr createScenarioOutlineState(const std::string& description, Scenario::StepList backgroudSteps, Scenario::StepList tags) = 0;
+    virtual IParserStatePtr createInitialState(std::list<Step> backgroudSteps) = 0;
+    virtual IParserStatePtr createExamplesState(Scenario testCase, std::list<Step> backgroudSteps) = 0;
+    virtual IParserStatePtr createScenarioState(bool scenariouOutline, const std::string& description, std::list<Step> backgroudSteps, std::list<Step> tags) = 0;
     virtual IParserStatePtr createBackgroundState() = 0;
 };
 

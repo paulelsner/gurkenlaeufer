@@ -1,16 +1,21 @@
 #pragma once
 
 #include <list>
+#include <map>
 #include <memory>
 #include <string>
 
 namespace gurkenlaeufer {
 
+struct Step {
+    std::string step;
+    std::string docString;
+};
+
 struct Scenario {
     std::string description;
-    using StepList = std::list<std::string>;
-    StepList tags;
-    StepList mainSteps;
+    std::list<Step> tags;
+    std::list<Step> mainSteps;
 };
 
 struct IScenarioCollection {

@@ -36,6 +36,13 @@ Feature: Addition
     # A comment should be possible here
     When I press <button>
     Then the result should be <output> on the screen
+    But nobody should know
+      """
+      This is additional
+      data
+      to the step
+      42!
+      """
 
   Examples:
     | input_1 | input 2 | button | output |
