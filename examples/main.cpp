@@ -1,41 +1,19 @@
-#include "GTestRunner.h"
-#include "Parser.h"
-#include "ParserStateFactory.h"
-#include "TestcaseCollection.h"
+#include "gurkenlaeufer/GTestRunner.h"
+#include "gurkenlaeufer/Parser.h"
+#include "gurkenlaeufer/ParserStateFactory.h"
+#include "gurkenlaeufer/ScenarioCollection.h"
 #include "gtest/gtest.h"
-#include <algorithm>
-#include <fstream>
-#include <iostream>
 #include <memory>
-#include <string>
 
-//from http://stackoverflow.com/a/17976541
-inline std::string trim(const std::string& s)
+// gurkenlaeufer GTestRunner requires to implement this function
+std::list<gurkenlaeufer::Scenario> gurkenlaeufer::getScenarios()
 {
-    auto wsfront = std::find_if_not(s.begin(), s.end(), ::isspace);
-    return std::string(wsfront, std::find_if_not(s.rbegin(), std::string::const_reverse_iterator(wsfront), ::isspace).base());
-}
+    auto scenarios = std::make_shared<gurkenlaeufer::ScenarioCollection>();
 
-// GTestRunner requires to implement this function
-std::list<TestSteps> getTestCases()
-{
-    auto testcases = std::make_shared<TestcaseCollection>();
-    std::ifstream fin("examples/addition.feature");
+    Parser parser(IParserStateFactoryPtr(new gurkenlaeufer::ParserStateFactory(scenarios)));
+    parser.parseFile("addition.feature");
 
-    Parser parser(IParserStateFactoryPtr(new ParserStateFactory(testcases)));
-
-    for (std::string line; getline(fin, line);) {
-        std::cout << line << std::endl;
-        auto trimmedLine = trim(line);
-
-        if (line.empty() || line[0] == '#') {
-            continue;
-        }
-
-        parser.parseLine(trimmedLine);
-    }
-
-    return testcases->getSteps();
+    return scenarios->getScenarios();
 }
 
 int main(int argc, char** argv)

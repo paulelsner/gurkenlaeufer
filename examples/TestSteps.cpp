@@ -1,4 +1,6 @@
-#include "Step.h"
+#define GURKE_STEP_NAME_PREFIX TestSteps
+
+#include "gurkenlaeufer/Step.h"
 #include "gtest/gtest.h"
 #include <iostream>
 #include <vector>
@@ -9,34 +11,38 @@ struct Calculator {
 
 STEP(".*have entered (\\d+) into the calculator$")
 {
+    // This step uses the gurkenlaeufer native API
     auto calc = getFixture<Calculator>();
-    calc->values.push_back(params[0].getInt());
+    calc->values.push_back(getNextParam<int>());
 }
 
 STEP(".*press (\\w+)")
 {
-    std::cout << params[0].getString() << std::endl;
+    std::cout << getNextParam<std::string>() << std::endl;
 }
+
 STEP(".*nostep")
 {
 }
 
 STEP(".*the result should be (\\d+) on the screen$")
 {
+    // This step uses the cucumber-cpp adaption layer
     auto calc = getFixture<Calculator>();
     int sum = 0;
     for (auto& n : calc->values)
         sum += n;
-    std::cout << "Sum=" << sum << " " << params[0].getInt() << std::endl;
-    EXPECT_EQ(params[0].getInt(), sum);
+    auto result = getParam<int>(0u);
+    std::cout << "Sum=" << sum << " " << result << std::endl;
+    EXPECT_EQ(result, sum);
 }
 
-BEFORE("Print")
+BEFORE("@Print")
 {
-    std::cout << " ctrl + p" << std::endl;
+    std::cout << "ctrl + p" << std::endl;
 }
 
-BEFORE("Echo")
+AFTER("@Echo")
 {
-    std::cout << " echo ho ho ho" << std::endl;
+    std::cout << "echo ho ho ho" << std::endl;
 }
