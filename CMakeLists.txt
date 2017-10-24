@@ -6,6 +6,11 @@ include(CMakeToolsHelpers OPTIONAL)
 
 set(CMAKE_CXX_STANDARD 11)
 
+if(NOT MSVC)
+  find_package(Threads REQUIRED)
+  link_libraries(pthread)
+endif()
+
 add_library(gurkenlaeufer INTERFACE)
 
 target_sources(
