@@ -39,6 +39,7 @@ public:
         , _backgroundSteps(std::move(backgroundSteps))
         , _scenarioCollection(scenarioCollection)
         , _isTableHead(true)
+        , _exampleCount(0)
     {
     }
 
@@ -68,6 +69,11 @@ private:
     void _generateSteps(const std::vector<std::string>& params)
     {
         Scenario scenarioCopy = _scenario;
+        std::stringstream scenarioDesc;
+        scenarioDesc << scenarioCopy.description << " example " << _exampleCount;
+        _exampleCount++;
+        scenarioCopy.description = scenarioDesc.str();
+
         for (auto& step : scenarioCopy.mainSteps) {
             step.step = _replaceParamsInStep(step.step, params);
         }
@@ -102,6 +108,7 @@ private:
     IScenarioCollectionSPtr _scenarioCollection;
     std::vector<std::string> _TableHead;
     bool _isTableHead;
+    int _exampleCount;
 };
 
 class ScenarioState final : public CommonParserState {
@@ -217,10 +224,12 @@ public:
             auto secondWordEnd = std::find_if(secondWordBegin, trimmedLine.end(), ::isspace);
             const std::string secondWord(secondWordBegin, secondWordEnd);
             if (secondWord == "Outline:") {
-                return _factory.createScenarioState(true, trimmedLine, std::move(_backgroundSteps), std::move(_tags));
+                const std::string description(secondWordEnd + 1, trimmedLine.end());
+                return _factory.createScenarioState(true, description, std::move(_backgroundSteps), std::move(_tags));
             }
         } else if (firstWord == "Scenario:") {
-            return _factory.createScenarioState(false, trimmedLine, std::move(_backgroundSteps), std::move(_tags));
+            const std::string description(firstWordEnd + 1, trimmedLine.end());
+            return _factory.createScenarioState(false, description, std::move(_backgroundSteps), std::move(_tags));
         } else if (firstWord == "Background:") {
             return _factory.createBackgroundState();
         }

@@ -3,6 +3,7 @@
 
 #include "Run.h"
 #include "gtest/gtest.h"
+#include <regex>
 
 namespace gurkenlaeufer {
 
@@ -11,6 +12,13 @@ namespace gurkenlaeufer {
 extern std::list<Scenario> getScenarios();
 
 namespace detail {
+    std::string printTestName(const testing::TestParamInfo<Scenario>& info)
+    {
+        std::regex regex("[:\\s]+");
+        const std::string replace("_");
+        return std::regex_replace(info.param.description, regex, replace);
+    }
+
     class CucumberTest : public testing::TestWithParam<Scenario> {
     };
 
@@ -22,6 +30,7 @@ namespace detail {
     INSTANTIATE_TEST_CASE_P(
         gurkenlaeufer,
         CucumberTest,
-        testing::ValuesIn(gurkenlaeufer::getScenarios()));
+        testing::ValuesIn(gurkenlaeufer::getScenarios()),
+        printTestName);
 }
 }
