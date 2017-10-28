@@ -8,14 +8,14 @@ Feature: Addition
     Then nostep 
 
   @Print
-  Scenario: Add two numbers
+  Scenario: Add two numbers.
     Given I have entered 1 into the calculator
     And I have entered 1 into the calculator
     When I press add
     Then the result should be 2 on the screen
 
   @Echo
-  Scenario Outline: Add two numbers
+  Scenario Outline: Add two numbers.
     Given I have entered <input_1> into the calculator
     And I have entered <input 2> into the calculator
     When I press <button>
@@ -29,7 +29,7 @@ Feature: Addition
 
   @Echo @Print
   # A comment should be possible here
-  Scenario Outline: Add two numbers with comments and two tags
+  Scenario Outline: add(+) two numbers with comments and two tags and special° characters\n\a *+'!:._,()/\§$ %= `´ <> @
     # A comment should be possible here
     Given I have entered <input_1> into the calculator
     And I have entered <input 2> into the calculator # A comment should be possible here
