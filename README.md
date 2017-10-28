@@ -32,3 +32,5 @@ The test runner uses the [google-test](https://github.com/google/googletest) fra
 * Background
 * Scenario Outline with examples
 * Before and After hooks
+* Doc strings
+* disable scenarios with @ignore tag
