@@ -27,6 +27,14 @@ Feature: Addition
     | 2       | 5       | add    | 7      |
     | 0       | 40      | add    | 40     |
 
+  # this scenario should not run. It will fail
+  @Ignore
+  Scenario: Do not run this
+    Given I have entered 1 into the calculator
+    And I have entered 1 into the calculator
+    When I press add
+    Then the result should be 3 on the screen
+
   @Echo @Print
   # A comment should be possible here
   Scenario Outline: add(+) two numbers with comments and two tags and special° characters\n\a *+'!:._,()/\§$ %= `´ <> @
