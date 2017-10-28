@@ -14,7 +14,7 @@ extern std::list<Scenario> getScenarios();
 namespace detail {
     std::string printTestName(const testing::TestParamInfo<Scenario>& info)
     {
-        std::regex regex("[:\\s]+");
+        std::regex regex("[^a-zA-Z\\d]+");
         const std::string replace("_");
         return std::regex_replace(info.param.description, regex, replace);
     }
