@@ -45,13 +45,9 @@ public:
 
     void parseLine(const std::string& trimmedLine)
     {
-        try {
-            auto nextState = _currentState->parseLine(trimmedLine);
-            if (nextState != nullptr) {
-                _currentState = std::move(nextState);
-            }
-        } catch (const std::exception& e) {
-            std::cerr << e.what() << std::endl;
+        auto nextState = _currentState->parseLine(trimmedLine);
+        if (nextState != nullptr) {
+            _currentState = std::move(nextState);
         }
     }
 
