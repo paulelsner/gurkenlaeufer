@@ -97,7 +97,12 @@ private:
             }
             const auto variableName = std::string(start + 1, end);
 
-            const auto indexOfVariable = std::find(_TableHead.begin(), _TableHead.end(), variableName) - _TableHead.begin();
+            const auto var = std::find(_TableHead.begin(), _TableHead.end(), variableName);
+            if (var == _TableHead.end()) {
+                throw std::runtime_error("variable '" + variableName + "' has not been declared");
+            }
+
+            const auto indexOfVariable = var - _TableHead.begin();
 
             outStep = std::string(outStep.begin(), start) + params[indexOfVariable] + std::string(end + 1, outStep.end());
         }
