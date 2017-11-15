@@ -41,6 +41,7 @@ public:
 
             parseLine(trimmedLine);
         }
+        finish();
     }
 
     void parseLine(const std::string& trimmedLine)
@@ -49,6 +50,12 @@ public:
         if (nextState != nullptr) {
             _currentState = std::move(nextState);
         }
+    }
+
+    void finish()
+    {
+        _currentState->finish();
+        _currentState.reset();
     }
 
 private:

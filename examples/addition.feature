@@ -57,3 +57,9 @@ Feature: Addition
     | 2       | 5       | add    | 7      |
     # A comment should be possible here
     | 0       | 40      | add    | 40     |
+
+Scenario: Add two numbers - test scenario at last place
+    Given I have entered 1 into the calculator
+    And I have entered 1 into the calculator
+    When I press add
+    Then the result should be 2 on the screen

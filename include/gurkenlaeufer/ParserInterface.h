@@ -1,6 +1,9 @@
 #pragma once
 
+#include <list>
 #include <memory>
+
+#include "ScenarioInterface.h"
 
 namespace gurkenlaeufer {
 
@@ -8,6 +11,7 @@ struct IParserState {
     virtual ~IParserState() = default;
 
     virtual std::unique_ptr<IParserState> parseLine(const std::string& trimmedLine) = 0;
+    virtual void finish() = 0;
 };
 
 using IParserStatePtr = std::unique_ptr<IParserState>;
