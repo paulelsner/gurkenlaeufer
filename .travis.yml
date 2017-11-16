@@ -1,4 +1,9 @@
 language: cpp
+
+env:
+  global:
+    - CTEST_EXT_COLOR_OUTPUT=TRUE
+
 compiler:
   - clang
   - gcc
@@ -9,4 +14,6 @@ before_script:
   - cd build
   - cmake ..
 
-script: make -j
+script: 
+  - make -j
+  - ctest --timeout 300 --output-on-failure

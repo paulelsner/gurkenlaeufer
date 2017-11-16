@@ -4,6 +4,8 @@ project("gurkenlaeufer")
 
 include(CMakeToolsHelpers OPTIONAL)
 
+enable_testing()
+
 set(CMAKE_CXX_STANDARD 11)
 
 if(NOT MSVC)
@@ -32,3 +34,4 @@ target_include_directories(gurkenlaeufer INTERFACE include/)
 
 add_subdirectory(gtest)
 add_subdirectory(examples)
+add_subdirectory(tests)

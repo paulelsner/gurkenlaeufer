@@ -12,6 +12,10 @@ inline bool isStepKeyword(std::string word)
 }
 
 class CommonParserState : public IParserState {
+public:
+    void finish() override {
+        // nothing to do
+    }
 protected:
     CommonParserState(IParserStateFactory& factory)
         : _factory(factory)
@@ -167,6 +171,10 @@ public:
 
         return nullptr;
     }
+    
+    void finish() override {
+        _scenarioCollection->appendScenario(std::move(_scenario));
+    }
 
 private:
     bool _scenarioOutline;
@@ -202,10 +210,10 @@ private:
     std::list<Step> _backgroundSteps;
 };
 
-class InitialState final : public IParserState {
+class InitialState final : public CommonParserState {
 public:
     InitialState(IParserStateFactory& factory, std::list<Step> backgroundSteps)
-        : _factory(factory)
+        : CommonParserState(factory)
         , _backgroundSteps(std::move(backgroundSteps))
     {
     }
@@ -242,7 +250,6 @@ public:
     }
 
 private:
-    IParserStateFactory& _factory;
     std::list<Step> _backgroundSteps;
     std::list<Step> _tags;
 };
