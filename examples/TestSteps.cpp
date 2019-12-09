@@ -11,7 +11,6 @@ struct Calculator {
 
 STEP(".*have entered (\\d+) into the calculator$")
 {
-    // This step uses the gurkenlaeufer native API
     auto calc = getFixture<Calculator>();
     calc->values.push_back(getNextParam<int>());
 }
@@ -27,7 +26,6 @@ STEP(".*nostep")
 
 STEP(".*the result should be (\\d+) on the screen$")
 {
-    // This step uses the cucumber-cpp adaption layer
     auto calc = getFixture<Calculator>();
     int sum = 0;
     for (auto& n : calc->values)
