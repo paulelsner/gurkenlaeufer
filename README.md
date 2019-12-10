@@ -1,7 +1,7 @@
 # gurkenlaeufer
 Simple cucumber like test runner.
 
-[![Build Status](https://travis-ci.org/paulelsner/gurkenlaeufer.svg?branch=master)](https://travis-ci.org/paulelsner/gurkenlaeufer) [![Build status](https://ci.appveyor.com/api/projects/status/8eth31num4oq6qwr?svg=true)](https://ci.appveyor.com/project/paulelsner/gurkenlaeufer)
+[![Build Status](https://travis-ci.org/paulelsner/gurkenlaeufer.svg?branch=master)](https://travis-ci.org/paulelsner/gurkenlaeufer) [![Build status](https://ci.appveyor.com/api/projects/status/vm3anm9a680jgpjw/branch/master?svg=true)](https://ci.appveyor.com/project/paulelsner/gurkenlaeufer)
 
 
 # What it does for you
