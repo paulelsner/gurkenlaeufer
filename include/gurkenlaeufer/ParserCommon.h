@@ -28,15 +28,15 @@ namespace gurkenlaeufer {
         inline std::string toLower(const std::string& input)
         {
             std::string output(input);
-            std::transform(input.begin(), input.end(), output.begin(), ::tolower);
+            std::transform(input.begin(), input.end(), output.begin(), [](unsigned char c){ return std::tolower(c); });
             return output;
         }
 
         //from http://stackoverflow.com/a/17976541
         std::string trim(const std::string& s)
         {
-            auto wsfront = std::find_if_not(s.begin(), s.end(), ::isspace);
-            return std::string(wsfront, std::find_if_not(s.rbegin(), std::string::const_reverse_iterator(wsfront), ::isspace).base());
+            auto wsfront = std::find_if_not(s.begin(), s.end(), [](unsigned char c){ return std::isspace(c); });
+            return std::string(wsfront, std::find_if_not(s.rbegin(), std::string::const_reverse_iterator(wsfront), [](unsigned char c){ return std::isspace(c); }).base());
         }
     }
 }
