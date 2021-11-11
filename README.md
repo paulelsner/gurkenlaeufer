@@ -21,11 +21,11 @@ Gurkenlaeufer has three parts:
 2. Test step framework
 3. Test runner
 
-The gherkin file parser takes lines as a input usually read from a feature files. Here it is up to the user where the line come from. Take a look into the example for a simple feature file reader.
+The gherkin file parser takes lines as a input usually read from a feature files. Here it is up to the user where the line come from. As simple file parser is provided.
 
 The test step framework helps you defining you test steps. With a regex you can match steps and with captured you get access to variable parameters.
 
-The test runner uses the [google-test](https://github.com/google/googletest) framework. From the parsed test cases multiple google tests will be created. This enables you using all the test features google-test gives you for you cucumber tests. Like running tests in parallel and generating junit output.
+The test runner uses the [google-test](https://github.com/google/googletest) framework. From the parsed test cases multiple google tests will be created. This enables you using all the test features google-test gives you for your cucumber tests. Like running tests in parallel and generating junit output.
 
 # Supported Features
 * Scenarios

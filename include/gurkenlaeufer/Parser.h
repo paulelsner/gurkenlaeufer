@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ParserInterface.h"
 #include "ParserCommon.h"
+#include "ParserInterface.h"
 
 #include <fstream>
 #include <string>
@@ -41,7 +41,6 @@ public:
 
             parseLine(trimmedLine);
         }
-        finish();
     }
 
     void parseLine(const std::string& trimmedLine)

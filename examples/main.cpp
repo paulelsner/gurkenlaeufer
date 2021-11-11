@@ -12,6 +12,7 @@ std::list<gurkenlaeufer::Scenario> gurkenlaeufer::getScenarios()
 
     Parser parser(IParserStateFactoryPtr(new gurkenlaeufer::ParserStateFactory(scenarios)));
     parser.parseFile("addition.feature");
+    parser.finish();
 
     return scenarios->getScenarios();
 }
