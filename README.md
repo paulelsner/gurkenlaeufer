@@ -34,3 +34,9 @@ The test runner uses the [google-test](https://github.com/google/googletest) fra
 * Before and After hooks
 * Doc strings
 * disable scenarios with @ignore tag
+
+# cucumber-cpp adaption layer
+To replace cucumber-cpp with gurkenlaeufer you have to do the following:
+* `#include "gurkenlaeufer/Step.h"` instead of cucumber-cpp for your step definitions
+* replace `cucumber::ScenarioScope<Context> Ctx;` by `gurkenlaeufer::ScenarioScope<Context> Ctx(this);`
+Take a look into the TestSteps_cucumber_cpp.
