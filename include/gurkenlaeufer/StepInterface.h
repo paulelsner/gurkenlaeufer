@@ -1,9 +1,11 @@
 #pragma once
 
-#include <sstream>
 #include <list>
 #include <memory>
+#include <sstream>
+#include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace gurkenlaeufer {

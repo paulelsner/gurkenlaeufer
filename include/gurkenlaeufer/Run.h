@@ -4,6 +4,10 @@
 #include "StepInterface.h"
 #include <iostream>
 #include <regex>
+#include <vector>
+#include <list>
+#include <string>
+#include <stdexcept>
 
 namespace gurkenlaeufer {
 namespace detail {

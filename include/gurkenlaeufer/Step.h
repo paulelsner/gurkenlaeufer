@@ -1,6 +1,7 @@
 #pragma once
 
 #include "StepInterface.h"
+#include <memory>
 
 // cucumber-cpp adaption of CUKE_OBJECT_PREFIX
 #ifndef GURKE_STEP_NAME_PREFIX

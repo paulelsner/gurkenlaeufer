@@ -4,6 +4,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <cctype>
 
 namespace gurkenlaeufer {
     namespace detail {

@@ -2,6 +2,9 @@
 
 #include "ParserCommon.h"
 #include "ScenarioInterface.h"
+#include <algorithm>
+#include <iostream>
+#include <list>
 
 namespace gurkenlaeufer {
 
