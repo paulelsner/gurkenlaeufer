@@ -5,6 +5,10 @@
 
 #include <fstream>
 #include <string>
+#include <utility>
+#include <stdexcept>
+#include <iostream>
+#include <algorithm>
 
 namespace gurkenlaeufer {
 class Parser final {
