@@ -24,3 +24,20 @@ TEST(ParserTest, shouldParseOneScenario)
     parser.parseLine("Given I have entered 1 into the calculator");
     parser.finish();
 }
+
+TEST(ParserTest, shouldParseScenariosFromStream)
+{
+    auto scenariosMock = std::make_shared<MockIScenarioCollection>();
+    Parser parser(IParserStateFactoryPtr(new ParserStateFactory(scenariosMock)));
+
+    EXPECT_CALL(*scenariosMock, appendScenario(_));
+    std::string description(
+        "\n\
+        # test scenario \n\
+        Scenario: Add two numbers. \n\
+        Given I have entered 1 into the calculator \n\
+        ");
+    std::istringstream in_stream(description);
+    parser.parseStream(&in_stream);
+    parser.finish();
+}
