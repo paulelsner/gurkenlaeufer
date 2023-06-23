@@ -3,12 +3,12 @@
 #include "ParserCommon.h"
 #include "ParserInterface.h"
 
+#include <algorithm>
 #include <fstream>
+#include <iostream>
+#include <stdexcept>
 #include <string>
 #include <utility>
-#include <stdexcept>
-#include <iostream>
-#include <algorithm>
 
 namespace gurkenlaeufer {
 class Parser final {
@@ -25,8 +25,12 @@ public:
         if (fin.fail()) {
             throw std::invalid_argument("The given cucumber feature file '" + filePath + "' can not be opened!");
         }
+        parseStream(&fin);
+    }
 
-        for (std::string line; std::getline(fin, line);) {
+    void parseStream(std::istream* stream)
+    {
+        for (std::string line; std::getline(*stream, line);) {
             std::cout << line << std::endl;
 
             // Trim off comments
